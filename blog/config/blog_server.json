@@ -1,0 +1,21 @@
+{
+    "server": {
+        "port": "8080",
+        "thread_num": 10,
+        "timeout": 5000,
+        "name": "blog_server"
+    },
+    "log": {
+        "level": "info",
+        "format": "%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n",
+        "file": "logs/blog_server.log"
+    },
+    "database": {
+        "type": "memory",
+        "host": "127.0.0.1",
+        "port": 3306,
+        "user": "root",
+        "password": "123456",
+        "dbname": "blog_db"
+    }
+}

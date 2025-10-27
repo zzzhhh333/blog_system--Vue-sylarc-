@@ -1,0 +1,292 @@
+[
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/log.cpp\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/log.cpp.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/log.cpp",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/log.cpp"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/util.cpp\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/util.cpp.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/util.cpp",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/util.cpp"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/mutex.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/mutex.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/mutex.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/mutex.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/env.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/env.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/env.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/env.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/config.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/config.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/config.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/config.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/thread.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/thread.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/thread.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/thread.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/fiber.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/fiber.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/fiber.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/fiber.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/scheduler.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/scheduler.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/scheduler.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/scheduler.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/iomanager.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/iomanager.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/iomanager.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/iomanager.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/timer.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/timer.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/timer.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/timer.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/fd_manager.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/fd_manager.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/fd_manager.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/fd_manager.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/hook.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/hook.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/hook.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/hook.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/address.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/address.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/address.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/address.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/socket.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/socket.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/socket.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/socket.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/bytearray.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/bytearray.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/bytearray.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/bytearray.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/tcp_server.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/tcp_server.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/tcp_server.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/tcp_server.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/gcc -Dsylar_EXPORTS -D__FILE__=\\\"sylar/http/http-parser/http_parser.c\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src -g -fPIC -o CMakeFiles/sylar.dir/sylar/http/http-parser/http_parser.c.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http-parser/http_parser.c",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http-parser/http_parser.c"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/http/http.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/http/http.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/http/http_parser.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/http/http_parser.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http_parser.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http_parser.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/stream.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/stream.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/stream.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/stream.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/streams/socket_stream.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/streams/socket_stream.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/streams/socket_stream.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/streams/socket_stream.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/http/http_session.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/http/http_session.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http_session.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http_session.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/http/servlet.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/http/servlet.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/servlet.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/servlet.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/http/http_server.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/http/http_server.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http_server.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http_server.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/uri.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/uri.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/uri.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/uri.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/http/http_connection.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http_connection.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/http/http_connection.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -Dsylar_EXPORTS -D__FILE__=\\\"sylar/daemon.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -fPIC -o CMakeFiles/sylar.dir/sylar/daemon.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/daemon.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/sylar/daemon.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_log.cpp\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_log.dir/tests/test_log.cpp.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_log.cpp",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_log.cpp"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_util.cpp\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_util.dir/tests/test_util.cpp.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_util.cpp",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_util.cpp"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_env.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_env.dir/tests/test_env.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_env.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_env.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_config.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_config.dir/tests/test_config.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_config.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_config.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_thread.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_thread.dir/tests/test_thread.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_thread.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_thread.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_fiber.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_fiber.dir/tests/test_fiber.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_fiber.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_fiber.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_fiber2.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_fiber2.dir/tests/test_fiber2.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_fiber2.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_fiber2.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_scheduler.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_scheduler.dir/tests/test_scheduler.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_scheduler.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_scheduler.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_iomanager.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_iomanager.dir/tests/test_iomanager.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_iomanager.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_iomanager.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_timer.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_timer.dir/tests/test_timer.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_timer.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_timer.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_hook.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_hook.dir/tests/test_hook.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_hook.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_hook.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_address.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_address.dir/tests/test_address.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_address.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_address.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_socket_tcp_server.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_socket_tcp_server.dir/tests/test_socket_tcp_server.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_socket_tcp_server.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_socket_tcp_server.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_socket_tcp_client.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_socket_tcp_client.dir/tests/test_socket_tcp_client.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_socket_tcp_client.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_socket_tcp_client.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_bytearray.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_bytearray.dir/tests/test_bytearray.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_bytearray.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_bytearray.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_tcp_server.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_tcp_server.dir/tests/test_tcp_server.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_tcp_server.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_tcp_server.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_http.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_http.dir/tests/test_http.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_http.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_http.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_http_parser.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_http_parser.dir/tests/test_http_parser.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_http_parser.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_http_parser.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_http_server.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_http_server.dir/tests/test_http_server.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_http_server.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_http_server.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_uri.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_uri.dir/tests/test_uri.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_uri.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_uri.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_http_connection.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_http_connection.dir/tests/test_http_connection.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_http_connection.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_http_connection.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -D__FILE__=\\\"tests/test_daemon.cc\\\" -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/test_daemon.dir/tests/test_daemon.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_daemon.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/tests/test_daemon.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/blog_server.dir/blog/src/main.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/main.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/main.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/blog_server.dir/blog/src/core/server.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/core/server.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/core/server.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/blog_server.dir/blog/src/http/servlet/blog_servlet.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/http/servlet/blog_servlet.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/http/servlet/blog_servlet.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/blog_server.dir/blog/src/http/servlet/user_servlet.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/http/servlet/user_servlet.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/http/servlet/user_servlet.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/blog_server.dir/blog/src/service/blog_service.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/service/blog_service.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/service/blog_service.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/blog_server.dir/blog/src/service/user_service.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/service/user_service.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/service/user_service.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/blog_server.dir/blog/src/util/json_util.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/util/json_util.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/util/json_util.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/blog_server.dir/blog/src/util/crypto_util.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/util/crypto_util.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/util/crypto_util.cc"
+},
+{
+  "directory": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build",
+  "command": "/bin/g++ -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/. -I/home/zzzhhh/MyLinux/Project/sylar-from-scratch/../blog/src  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-function -Wno-builtin-macro-redefined -Wno-deprecated -Wno-deprecated-declarations -g -o CMakeFiles/blog_server.dir/blog/src/util/auth_util.cc.o -c /home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/util/auth_util.cc",
+  "file": "/home/zzzhhh/MyLinux/Project/sylar-from-scratch/blog/src/util/auth_util.cc"
+}
+]
