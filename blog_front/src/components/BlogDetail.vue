@@ -86,7 +86,7 @@ const fetchBlogDetail = async () => {
   loading.value = true
   try {
     const response = await getBlogDetail(blogId.value)
-    if (response.data.code === 0) {
+    if (response.data.code === 200) {
       blog.value = response.data.data
     } else {
       blog.value = null
@@ -112,7 +112,7 @@ const handleDelete = async () => {
     })
 
     const response = await deleteBlog(blogId.value)
-    if (response.data.code === 0) {
+    if (response.data.code === 200) {
       ElMessage.success('删除成功')
       router.push('/')
     } else {

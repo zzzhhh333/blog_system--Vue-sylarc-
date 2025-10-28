@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
   // 初始化时尝试获取用户信息
   if (token.value) {
     getUserInfo().then(response => {
-      if (response.data.code === 0) {
+      if (response.data.code === 200) {
         user.value = response.data.data
       }
     }).catch(() => {
@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
   const loginUser = async (username, password) => {
     try {
       const response = await login(username, password)
-      if (response.data.code === 0) {
+      if (response.data.code === 200) {
         token.value = response.data.data.token
         user.value = response.data.data.user
         localStorage.setItem('token', token.value)
@@ -38,7 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
   const registerUser = async (userData) => {
     try {
       const response = await register(userData)
-      if (response.data.code === 0) {
+      if (response.data.code === 200) {
         token.value = response.data.data.token
         user.value = response.data.data.user
         localStorage.setItem('token', token.value)
@@ -63,7 +63,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (token.value) {
       try {
         const response = await getUserInfo()
-        if (response.data.code === 0) {
+        if (response.data.code === 200) {
           user.value = response.data.data
         }
       } catch (error) {

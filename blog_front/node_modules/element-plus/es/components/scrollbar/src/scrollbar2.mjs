@@ -1,6 +1,6 @@
 import { defineComponent, ref, computed, watch, nextTick, provide, reactive, onActivated, onMounted, onUpdated, openBlock, createElementBlock, normalizeClass, unref, createElementVNode, normalizeStyle, createBlock, resolveDynamicComponent, withCtx, renderSlot, createCommentVNode } from 'vue';
 import { useResizeObserver, useEventListener } from '@vueuse/core';
-import Bar from './bar2.mjs';
+import Bar from './bar.mjs';
 import { scrollbarContextKey } from './constants.mjs';
 import { scrollbarProps, scrollbarEmits } from './scrollbar.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';

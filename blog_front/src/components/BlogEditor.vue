@@ -132,7 +132,7 @@ const handleSubmit = async () => {
       response = await createBlog(form)
     }
     
-    if (response.data.code === 0) {
+    if (response.data.code === 200) {
       ElMessage.success(props.blog ? '更新成功' : '发布成功')
       emit('success')
       handleClose()

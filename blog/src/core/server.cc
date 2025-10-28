@@ -1,4 +1,5 @@
 #include "server.h"
+#include "sylar/env.h"
 #include "../http/servlet/blog_servlet.h"
 #include "../http/servlet/user_servlet.h"
 #include "../util/json_util.h"
@@ -65,13 +66,13 @@ void BlogServer::initDatabase() {
 
     SYLAR_LOG_INFO(g_logger) << "Database initialized connected...";
 
-    if(!sylar::MySQLManager::GetInstance()->Init("../../config/mysql.yml")) 
+    if(!sylar::MySQLManager::GetInstance()->Init(sylar::EnvMgr::GetInstance()->getConfigPath())) 
     {
         SYLAR_LOG_ERROR(g_logger) << "Failed to initialize MySQLManager";
         return;
     }
 
-    if(!sylar::RedisManager::GetInstance()->Init("../../config/redis.yml")) 
+    if(!sylar::RedisManager::GetInstance()->Init(sylar::EnvMgr::GetInstance()->getConfigPath())) 
     {
         SYLAR_LOG_ERROR(g_logger) << "Failed to initialize RedisManager";
         return;

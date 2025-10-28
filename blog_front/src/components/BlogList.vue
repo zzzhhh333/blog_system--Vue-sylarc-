@@ -86,7 +86,7 @@ const fetchBlogs = async () => {
       const status = 1
       response = await getBlogList(currentPage.value, pageSize.value, status)
     }
-    if (response.data.code === 0) {
+    if (response.data.code === 200) {
       blogs.value = response.data.data
       total.value = response.data.data.length
     }
@@ -119,7 +119,7 @@ const deleteBlog = async (id) => {
     })
     
     const response = await deleteBlogApi(id)
-    if (response.data.code === 0) {
+    if (response.data.code === 200) {
       ElMessage.success('删除成功')
       fetchBlogs()
     }

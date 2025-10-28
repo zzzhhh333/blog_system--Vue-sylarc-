@@ -187,7 +187,7 @@ bool RedisManager::Init(const std::string& conf_path) {
             RedisConf conf;
             if(conf.loadFromYaml(node)) {
                 auto pool = std::make_shared<RedisPool>(conf);
-                GetInstance()->addPool(name, pool);
+                RedisMgr::GetInstance()->addPool(name, pool);
                 
                 SYLAR_LOG_INFO(g_logger) << "Init Redis pool: " << name 
                                        << " " << conf.host << ":" << conf.port

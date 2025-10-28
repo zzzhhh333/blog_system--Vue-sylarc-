@@ -231,11 +231,10 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
           min: _ctx.min,
           max: _ctx.max,
           precision: vue.unref(precision),
-          debounce: _ctx.debounce,
           size: vue.unref(sliderInputSize),
           "onUpdate:modelValue": vue.unref(setFirstValue),
           onChange: vue.unref(emitChange)
-        }, null, 8, ["model-value", "class", "step", "disabled", "controls", "min", "max", "precision", "debounce", "size", "onUpdate:modelValue", "onChange"])) : vue.createCommentVNode("v-if", true)
+        }, null, 8, ["model-value", "class", "step", "disabled", "controls", "min", "max", "precision", "size", "onUpdate:modelValue", "onChange"])) : vue.createCommentVNode("v-if", true)
       ], 10, ["id", "role", "aria-label", "aria-labelledby"]);
     };
   }

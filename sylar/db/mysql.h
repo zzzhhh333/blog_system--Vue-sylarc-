@@ -81,7 +81,7 @@ class MySQLManager {
 public:
     typedef std::shared_ptr<MySQLManager> ptr;
     typedef RWMutex RWMutexType;
-    
+    MySQLManager() = default;
     /**
      * @brief 初始化MySQL管理器
      */
@@ -108,7 +108,7 @@ public:
     void addPool(const std::string& name, MySQLPool::ptr pool);
 
 private:
-    MySQLManager() = default;
+    
     
 private:
     std::map<std::string, MySQLPool::ptr> m_pools; ///< 连接池映射

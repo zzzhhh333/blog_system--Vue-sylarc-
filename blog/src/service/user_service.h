@@ -2,6 +2,7 @@
 #define BLOG_SERVER_SERVICE_USER_SERVICE_H
 
 #include "../model/user.h"
+#include "../dao/user_dao.h"
 #include <memory>
 #include <string>
 
@@ -26,11 +27,22 @@ public:
     
     // 验证用户
     bool validateUser(int64_t user_id, const std::string& password);
+    
+    // 重置用户密码
+    bool resetPassword(int64_t user_id, const std::string& new_password);
+
+    // 更改用户密码
+    bool updatePassword(int64_t user_id, const std::string& old_password, const std::string& new_password);
+
 
 private:
+    std::shared_ptr<dao::UserDao> user_dao_;
+
     int64_t generateUserId();
     std::string hashPassword(const std::string& password);
     bool verifyPassword(const std::string& password, const std::string& hashed);
+    void setUserDao(std::shared_ptr<dao::UserDao> user_dao);
+
 };
 
 } // namespace service

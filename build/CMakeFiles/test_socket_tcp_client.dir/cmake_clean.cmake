@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "../bin/test_socket_tcp_client"
-  "../bin/test_socket_tcp_client.pdb"
+  "/home/zzhhh/myProject/blog_system--Vue-sylarc-/bin/test_socket_tcp_client"
+  "/home/zzhhh/myProject/blog_system--Vue-sylarc-/bin/test_socket_tcp_client.pdb"
   "CMakeFiles/test_socket_tcp_client.dir/tests/test_socket_tcp_client.cc.o"
   "CMakeFiles/test_socket_tcp_client.dir/tests/test_socket_tcp_client.cc.o.d"
 )

@@ -75,7 +75,7 @@ int32_t UserRegisterServlet::handle(sylar::http::HttpRequest::ptr request,
     data["token"] = token;
     data["user"] = result.toJson();
     
-    model::ApiResponse api_response(0, "注册成功", data);
+    model::ApiResponse api_response(200, "注册成功", data);
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     
@@ -124,7 +124,7 @@ int32_t UserLoginServlet::handle(sylar::http::HttpRequest::ptr request,
     data["token"] = token;
     data["user"] = user.toJson();
     
-    model::ApiResponse api_response(0, "登录成功", data);
+    model::ApiResponse api_response(200, "登录成功", data);
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     
@@ -160,14 +160,14 @@ int32_t UserInfoServlet::handle(sylar::http::HttpRequest::ptr request,
             return 0;
         }
         
-        model::ApiResponse api_response(0, "success", target_user.toJson());
+        model::ApiResponse api_response(200, "success", target_user.toJson());
         response->setBody(util::JsonUtil::toString(api_response.toJson()));
         response->setHeader("Content-Type", "application/json");
         return 0;
     }
     
     // 返回当前用户信息
-    model::ApiResponse api_response(0, "success", user.toJson());
+    model::ApiResponse api_response(200, "success", user.toJson());
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     
@@ -224,7 +224,7 @@ int32_t UserProfileServlet::handle(sylar::http::HttpRequest::ptr request,
         return 0;
     }
     
-    model::ApiResponse api_response(0, "资料更新成功", updated_user.toJson());
+    model::ApiResponse api_response(200, "资料更新成功", updated_user.toJson());
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     

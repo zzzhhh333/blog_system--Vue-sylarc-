@@ -134,7 +134,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         "aria-labelledby": unref(isLabeledByFormItem) ? unref(formItem).labelId : void 0
       }, [
         createElementVNode("div", {
-          class: normalizeClass([unref(ns).e("group"), unref(ns).m(props.direction)])
+          class: normalizeClass([unref(ns).e("group"), unref(ns).m(_ctx.direction)])
         }, [
           createElementVNode("div", {
             style: normalizeStyle(unref(selectedStyle)),

@@ -1,303 +1,325 @@
 // mysql_wrapper.h
-#ifndef MYSQL_WRAPPER_H
-#define MYSQL_WRAPPER_H
+#ifndef SYLAR_MYSQL_WRAPPER_H
+#define SYLAR_MYSQL_WRAPPER_H
 
-#include <mysql/mysql.h>
+#include <mysql/mysql.h>  // MySQL C API 头文件
 #include <string>
-#include <vector>
-#include <map>
 #include <memory>
+#include <vector>
+#include <unordered_map>
 
 namespace sylar {
 
 /**
- * @brief MySQL数据库封装类
+ * @brief MySQL 数据库封装类
  * 
- * 这个类封装了MySQL C API，提供了简单易用的接口来操作MySQL数据库。
- * 支持连接管理、SQL执行、事务处理、预处理语句等功能。
+ * 这个类封装了 MySQL C API，提供了更友好、更安全的 C++ 接口。
+ * 支持连接管理、SQL执行、预处理语句、事务处理等功能。
+ * 使用 RAII 模式管理资源，确保资源正确释放。
  */
 class MySQLWrapper {
 public:
+    using ptr = std::shared_ptr<MySQLWrapper>;  ///< 智能指针类型定义
+    
     /**
-     * @brief 构造函数
+     * @brief 数据库连接配置结构体
      * 
-     * 初始化MySQL连接句柄，但不建立实际连接。
+     * 包含连接到 MySQL 数据库所需的所有配置参数
+     */
+    struct Config {
+        std::string host = "127.0.0.1";      ///< 数据库主机地址
+        std::string user = "root";           ///< 数据库用户名
+        std::string password;                ///< 数据库密码
+        std::string database;                ///< 数据库名称
+        unsigned int port = 3306;            ///< 数据库端口号
+        std::string charset = "utf8mb4";     ///< 字符集编码
+        int timeout = 30;                    ///< 连接超时时间（秒）
+        int reconnect = 1;                   ///< 是否自动重连（1-是，0-否）
+    };
+    
+    /**
+     * @brief 查询结果集封装类
+     * 
+     * 封装了 MySQL 查询结果集，提供类型安全的数据访问方法
+     */
+    class Result {
+    public:
+        using ptr = std::shared_ptr<Result>;  ///< 智能指针类型定义
+
+        /**
+         * @brief 构造函数
+         * @param res MySQL 原生结果集指针
+         */
+        Result(MYSQL_RES* res);
+        
+        /**
+         * @brief 析构函数，自动释放结果集资源
+         */
+        ~Result();
+        
+        
+        /**
+         * @brief 移动到结果集的下一行
+         * @return 如果还有下一行数据返回 true，否则返回 false
+         */
+        bool next();
+        
+        // 数据获取方法 - 按列名
+        int getInt(const std::string& column);           ///< 获取整型数据（按列名）
+        int64_t getInt64(const std::string& column);     ///< 获取64位整型数据（按列名）
+        std::string getString(const std::string& column);///< 获取字符串数据（按列名）
+        double getDouble(const std::string& column);     ///< 获取浮点数据（按列名）
+        bool isNull(const std::string& column);          ///< 检查列值是否为NULL（按列名）
+        
+        // 数据获取方法 - 按列索引
+        int getInt(int index);               ///< 获取整型数据（按列索引）
+        int64_t getInt64(int index);         ///< 获取64位整型数据（按列索引）
+        std::string getString(int index);    ///< 获取字符串数据（按列索引）
+        double getDouble(int index);         ///< 获取浮点数据（按列索引）
+        bool isNull(int index);              ///< 检查列值是否为NULL（按列索引）
+        
+        // 结果集信息获取方法
+        int getRowCount() const { return row_count_; }       ///< 获取结果集行数
+        int getFieldCount() const { return field_count_; }   ///< 获取结果集列数
+        std::string getFieldName(int index) const;           ///< 获取指定列的名称
+        
+    private:
+        
+        /**
+         * @brief 根据列名获取列索引
+         * @param column 列名
+         * @return 列索引，如果不存在返回 -1
+         */
+        int getColumnIndex(const std::string& column);
+        
+    private:
+        MYSQL_RES* result_ = nullptr;                    ///< MySQL 原生结果集指针
+        MYSQL_ROW row_ = nullptr;                        ///< 当前数据行
+        unsigned long* lengths_ = nullptr;               ///< 当前行各列数据长度
+        MYSQL_FIELD* fields_ = nullptr;                  ///< 结果集字段信息
+        int field_count_ = 0;                            ///< 字段数量
+        int row_count_ = 0;                              ///< 行数量
+        std::unordered_map<std::string, int> field_index_map_;  ///< 字段名到索引的映射表
+    };
+    
+    /**
+     * @brief 预处理语句封装类
+     * 
+     * 封装了 MySQL 预处理语句，提供类型安全的参数绑定和数据访问
+     * 可以有效防止 SQL 注入攻击，提高执行效率
+     */
+    class PreparedStatement {
+    public:
+        using ptr = std::shared_ptr<PreparedStatement>;  ///< 智能指针类型定义
+        
+        /**
+         * @brief 构造函数
+         * @param db 数据库连接指针
+         * @param sql SQL 语句
+         */
+        PreparedStatement(MySQLWrapper* db, const std::string& sql);
+
+
+        /**
+         * @brief 析构函数，自动释放预处理语句资源
+         */
+        ~PreparedStatement();
+        
+        /**
+         * @brief 执行预处理语句（用于 INSERT/UPDATE/DELETE 等）
+         * @return 执行成功返回 true，失败返回 false
+         */
+        bool execute();
+        
+        /**
+         * @brief 执行查询预处理语句（用于 SELECT）
+         * @return 结果集指针，执行失败返回 nullptr
+         */
+        Result::ptr query();
+        
+        // 参数绑定方法
+        void setInt(int paramIndex, int value);                     ///< 绑定整型参数
+        void setInt64(int paramIndex, int64_t value);              ///< 绑定64位整型参数
+        void setDouble(int paramIndex, double value);              ///< 绑定浮点参数
+        void setString(int paramIndex, const std::string& value);  ///< 绑定字符串参数
+        void setNull(int paramIndex);                              ///< 绑定NULL参数
+        void setBlob(int paramIndex, const void* data, unsigned long length);  ///< 绑定二进制数据参数
+        
+        // 执行结果信息
+        int getAffectedRows();      ///< 获取受影响的行数
+        int64_t getLastInsertId();  ///< 获取最后插入的ID
+        
+    
+        
+    private:
+        MySQLWrapper* db_ = nullptr;    ///< 数据库连接指针
+        MYSQL_STMT* stmt_ = nullptr;    ///< MySQL 原生预处理语句指针
+        MYSQL_BIND* params_ = nullptr;  ///< 参数绑定数组
+        int param_count_ = 0;           ///< 参数数量
+        std::vector<char*> buffers_;    ///< 参数值缓冲区（用于自动内存管理）
+        std::vector<unsigned long> buffer_lengths_;  ///< 参数值长度数组
+    };
+
+public:
+    /**
+     * @brief 默认构造函数
+     * 
+     * 初始化 MySQL 连接句柄，设置默认连接选项
      */
     MySQLWrapper();
     
     /**
      * @brief 析构函数
      * 
-     * 自动断开连接并清理资源。
+     * 自动断开连接并释放所有资源
      */
     ~MySQLWrapper();
     
-    // ==================== 连接管理 ====================
+    // ==================== 连接管理方法 ====================
     
     /**
-     * @brief 连接到MySQL数据库
-     * 
-     * @param host 数据库服务器地址
-     * @param user 用户名
-     * @param password 密码
-     * @param database 数据库名
-     * @param port 端口号，默认3306
-     * @param charset 字符集，默认utf8
-     * @return true 连接成功
-     * @return false 连接失败
+     * @brief 使用配置结构体连接到数据库
+     * @param config 数据库连接配置
+     * @return 连接成功返回 true，失败返回 false
      */
-    bool connect(const std::string& host, const std::string& user, 
+    bool connect(const Config& config);
+    
+    /**
+     * @brief 使用参数连接到数据库
+     * @param host 数据库主机地址
+     * @param user 数据库用户名
+     * @param password 数据库密码
+     * @param database 数据库名称
+     * @param port 数据库端口号，默认3306
+     * @param charset 字符集编码，默认utf8mb4
+     * @return 连接成功返回 true，失败返回 false
+     */
+    bool connect(const std::string& host, const std::string& user,
                 const std::string& password, const std::string& database,
-                unsigned int port = 3306, const std::string& charset = "utf8");
+                unsigned int port = 3306, const std::string& charset = "utf8mb4");
     
     /**
      * @brief 断开数据库连接
      * 
-     * 关闭与MySQL服务器的连接，并清理结果集等资源。
+     * 关闭与数据库的连接，释放相关资源
      */
     void disconnect();
     
     /**
      * @brief 检查连接状态
-     * 
-     * @return true 连接正常
-     * @return false 连接已断开
+     * @return 连接正常返回 true，断开返回 false
      */
     bool isConnected();
     
-    // ==================== 基础操作 ====================
+    /**
+     * @brief 检查连接并尝试重连
+     * @return 连接正常或重连成功返回 true，否则返回 false
+     */
+    bool ping();
+    
+    // ==================== SQL 执行方法 ====================
     
     /**
-     * @brief 执行SQL语句（用于INSERT/UPDATE/DELETE等）
-     * 
-     * @param sql 要执行的SQL语句
-     * @return true 执行成功
-     * @return false 执行失败
+     * @brief 执行 SQL 语句（用于 INSERT/UPDATE/DELETE 等）
+     * @param sql 要执行的 SQL 语句
+     * @return 执行成功返回 true，失败返回 false
      */
     bool execute(const std::string& sql);
     
     /**
-     * @brief 执行查询语句（用于SELECT）
-     * 
-     * @param sql 查询SQL语句
-     * @return true 查询成功
-     * @return false 查询失败
+     * @brief 执行查询 SQL 语句（用于 SELECT）
+     * @param sql 要执行的查询 SQL 语句
+     * @return 结果集指针，执行失败返回 nullptr
      */
-    bool query(const std::string& sql);
+    Result::ptr query(const std::string& sql);
     
     /**
-     * @brief 获取受影响的行数
-     * 
-     * @return int 受影响的行数
+     * @brief 创建预处理语句
+     * @param sql 包含占位符的 SQL 语句
+     * @return 预处理语句指针，创建失败返回 nullptr
      */
-    int getAffectedRows();
+    PreparedStatement::ptr prepare(const std::string& sql);
     
-    /**
-     * @brief 获取最后插入的ID
-     * 
-     * @return long long 最后插入的自增ID
-     */
-    long long getLastInsertId();
-    
-    // ==================== 结果集操作 ====================
-    
-    /**
-     * @brief 移动到结果集的下一行
-     * 
-     * @return true 成功移动到下一行
-     * @return false 没有更多行或出错
-     */
-    bool next();
-    
-    /**
-     * @brief 根据列名获取整数值
-     * 
-     * @param column 列名
-     * @return int 整数值
-     */
-    int getInt(const std::string& column);
-    
-    /**
-     * @brief 根据列索引获取整数值
-     * 
-     * @param index 列索引（从0开始）
-     * @return int 整数值
-     */
-    int getInt(int index);
-    
-    /**
-     * @brief 根据列名获取字符串值
-     * 
-     * @param column 列名
-     * @return std::string 字符串值
-     */
-    std::string getString(const std::string& column);
-    
-    /**
-     * @brief 根据列索引获取字符串值
-     * 
-     * @param index 列索引（从0开始）
-     * @return std::string 字符串值
-     */
-    std::string getString(int index);
-    
-    /**
-     * @brief 根据列名获取浮点数值
-     * 
-     * @param column 列名
-     * @return double 浮点数值
-     */
-    double getDouble(const std::string& column);
-    
-    /**
-     * @brief 根据列索引获取浮点数值
-     * 
-     * @param index 列索引（从0开始）
-     * @return double 浮点数值
-     */
-    double getDouble(int index);
-    
-    /**
-     * @brief 检查指定列是否为NULL
-     * 
-     * @param column 列名
-     * @return true 值为NULL
-     * @return false 值不为NULL
-     */
-    bool isNull(const std::string& column);
-    
-    /**
-     * @brief 检查指定列是否为NULL
-     * 
-     * @param index 列索引
-     * @return true 值为NULL
-     * @return false 值不为NULL
-     */
-    bool isNull(int index);
-    
-    // ==================== 事务操作 ====================
+    // ==================== 事务管理方法 ====================
     
     /**
      * @brief 开始事务
-     * 
-     * @return true 开始成功
-     * @return false 开始失败
+     * @return 开始成功返回 true，失败返回 false
      */
     bool beginTransaction();
     
     /**
      * @brief 提交事务
-     * 
-     * @return true 提交成功
-     * @return false 提交失败
+     * @return 提交成功返回 true，失败返回 false
      */
     bool commit();
     
     /**
      * @brief 回滚事务
-     * 
-     * @return true 回滚成功
-     * @return false 回滚失败
+     * @return 回滚成功返回 true，失败返回 false
      */
     bool rollback();
     
-    // ==================== 预处理语句 ====================
+    // ==================== 信息获取方法 ====================
     
     /**
-     * @brief 预处理语句类
-     * 
-     * 用于执行带参数的SQL语句，防止SQL注入攻击。
+     * @brief 获取受影响的行数
+     * @return 受影响的行数
      */
-    class PreparedStatement {
-    public:
-        /**
-         * @brief 构造函数
-         * 
-         * @param db MySQLWrapper指针
-         * @param sql 预处理SQL语句（使用?作为参数占位符）
-         */
-        PreparedStatement(MySQLWrapper* db, const std::string& sql);
-        
-        /**
-         * @brief 析构函数
-         * 
-         * 清理预处理语句资源。
-         */
-        ~PreparedStatement();
-        
-        /**
-         * @brief 执行预处理语句（用于INSERT/UPDATE/DELETE）
-         * 
-         * @return true 执行成功
-         * @return false 执行失败
-         */
-        bool execute();
-        
-        /**
-         * @brief 执行查询预处理语句（用于SELECT）
-         * 
-         * @return true 查询成功
-         * @return false 查询失败
-         */
-        bool query();
-        
-        // 参数绑定方法
-        void setInt(int paramIndex, int value);      ///< 绑定整型参数
-        void setDouble(int paramIndex, double value); ///< 绑定浮点型参数
-        void setString(int paramIndex, const std::string& value); ///< 绑定字符串参数
-        void setNull(int paramIndex);                ///< 绑定NULL参数
-        
-    private:
-        MYSQL_STMT* stmt_;           ///< MySQL预处理语句句柄
-        MYSQL_BIND* params_;         ///< 参数绑定数组
-        std::vector<char*> stringBuffers_; ///< 字符串参数缓冲区
-    };
+    int getAffectedRows();
     
     /**
-     * @brief 创建预处理语句
-     * 
-     * @param sql 预处理SQL语句
-     * @return std::shared_ptr<PreparedStatement> 预处理语句智能指针
+     * @brief 获取最后插入的ID
+     * @return 最后插入的自动增长ID
      */
-    std::shared_ptr<PreparedStatement> prepare(const std::string& sql);
-    
-    // ==================== 错误处理 ====================
+    int64_t getLastInsertId();
     
     /**
      * @brief 获取错误信息
-     * 
-     * @return std::string 错误描述
+     * @return 错误描述字符串
      */
     std::string getError();
     
     /**
      * @brief 获取错误代码
-     * 
-     * @return int MySQL错误代码
+     * @return MySQL 错误代码
      */
     int getErrorCode();
+    
+    // ==================== 连接信息获取方法 ====================
+    
+    /**
+     * @brief 获取数据库主机地址
+     * @return 主机地址字符串
+     */
+    std::string getHost() const { return config_.host; }
+    
+    /**
+     * @brief 获取数据库名称
+     * @return 数据库名称字符串
+     */
+    std::string getDatabase() const { return config_.database; }
 
 private:
-    MYSQL* mysql_;          ///< MySQL连接句柄
-    MYSQL_RES* result_;     ///< 查询结果集
-    MYSQL_ROW row_;         ///< 当前行数据
-    unsigned int num_fields_; ///< 结果集列数
-    MYSQL_FIELD* fields_;   ///< 结果集列信息
-    
     /**
-     * @brief 清理结果集资源
-     */
-    void clearResult();
-    
-    /**
-     * @brief 根据列名获取列索引
+     * @brief 清理错误状态
      * 
-     * @param column 列名
-     * @return int 列索引，-1表示未找到
+     * 重置错误状态，为下一次操作做准备
      */
-    int getColumnIndex(const std::string& column);
+    void clearError();
+    
+    /**
+     * @brief 重新连接数据库
+     * @return 重连成功返回 true，失败返回 false
+     */
+    bool reconnect();
+    
+private:
+    MYSQL* mysql_ = nullptr;        ///< MySQL 连接句柄
+    Config config_;                 ///< 连接配置信息
+    bool in_transaction_ = false;   ///< 是否在事务中的标志
 };
 
-}
+} // namespace sylar
 
-#endif // MYSQL_WRAPPER_H
+#endif // SYLAR_MYSQL_WRAPPER_H

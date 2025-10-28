@@ -112,11 +112,12 @@ bool MySQLManager::Init(const std::string& conf_path) {
             if(conf.loadFromYaml(node)) {
                 uint32_t max_conn = node["max_conn"] ? node["max_conn"].as<uint32_t>() : 10;
                 auto pool = std::make_shared<MySQLPool>(conf, max_conn);
-                GetInstance()->addPool(name, pool);
+                MySQLMgr::GetInstance()->addPool(name, pool);
                 
                 SYLAR_LOG_INFO(g_logger) << "Init MySQL pool: " << name 
                                        << " " << conf.host << ":" << conf.port 
                                        << "/" << conf.database;
+
             }
         }
         return true;
@@ -139,7 +140,9 @@ MySQLPool::ptr MySQLManager::getPool(const std::string& name) {
 
 std::shared_ptr<MySQLWrapper> MySQLManager::getConnection(const std::string& name) {
     auto pool = getPool(name);
+    SYLAR_LOG_INFO(g_logger) << name;
     if(pool) {
+        SYLAR_LOG_INFO(g_logger) << 1;
         return pool->getConnection();
     }
     return nullptr;

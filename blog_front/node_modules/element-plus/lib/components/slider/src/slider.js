@@ -51,10 +51,6 @@ const sliderProps = runtime.buildProps({
   range: Boolean,
   vertical: Boolean,
   height: String,
-  debounce: {
-    type: Number,
-    default: 300
-  },
   rangeStartLabel: {
     type: String,
     default: void 0

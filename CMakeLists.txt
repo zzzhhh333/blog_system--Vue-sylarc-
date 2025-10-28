@@ -1,9 +1,13 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.7)
 project(sylar-from-scratch)
 
 include (cmake/utils.cmake)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # 指定编译选项
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -std=c++11 -O0 -ggdb -Wall -Werror -g")
@@ -63,6 +67,10 @@ set(LIB_SRC
     sylar/uri.cc 
     sylar/http/http_connection.cc 
     sylar/daemon.cc 
+    sylar/db/mysql_wrapper.cc
+    sylar/db/mysql.cc
+    sylar/db/redis_wrapper.cc
+    sylar/db/redis.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})
@@ -74,6 +82,8 @@ set(LIBS
     dl
     yaml-cpp
     jsoncpp
+    hiredis
+    mysqlclient
     OpenSSL::SSL
     OpenSSL::Crypto
 )
@@ -125,6 +135,12 @@ if(BUILD_BLOG_SERVER)
         ${CMAKE_SOURCE_DIR}/blog/src/util/json_util.cc
         ${CMAKE_SOURCE_DIR}/blog/src/util/crypto_util.cc
         ${CMAKE_SOURCE_DIR}/blog/src/util/auth_util.cc
+        ${CMAKE_SOURCE_DIR}/blog/src/util/jwt_util.cc
+        ${CMAKE_SOURCE_DIR}/blog/src/dao/user_dao.cc
+        ${CMAKE_SOURCE_DIR}/blog/src/dao/blog_dao.cc
+
+
+
     )
     
     # 包含博客项目的头文件

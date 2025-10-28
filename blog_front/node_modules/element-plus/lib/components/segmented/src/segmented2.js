@@ -138,7 +138,7 @@ const _sfc_main = /* @__PURE__ */ vue.defineComponent({
         "aria-labelledby": vue.unref(isLabeledByFormItem) ? vue.unref(formItem).labelId : void 0
       }, [
         vue.createElementVNode("div", {
-          class: vue.normalizeClass([vue.unref(ns).e("group"), vue.unref(ns).m(props.direction)])
+          class: vue.normalizeClass([vue.unref(ns).e("group"), vue.unref(ns).m(_ctx.direction)])
         }, [
           vue.createElementVNode("div", {
             style: vue.normalizeStyle(vue.unref(selectedStyle)),

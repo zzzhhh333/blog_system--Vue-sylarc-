@@ -29,7 +29,7 @@ int32_t BlogListServlet::handle(sylar::http::HttpRequest::ptr request,
         data.append(blog.toJson());
     }
     
-    model::ApiResponse api_response(0, "success", data);
+    model::ApiResponse api_response(200, "success", data);
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     
@@ -64,7 +64,7 @@ int32_t BlogListWithUserIdServlet::handle(sylar::http::HttpRequest::ptr request,
         data.append(blog.toJson());
     }
     
-    model::ApiResponse api_response(0, "success", data);
+    model::ApiResponse api_response(200, "success", data);
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     
@@ -119,7 +119,7 @@ int32_t BlogCreateServlet::handle(sylar::http::HttpRequest::ptr request,
     auto new_blog = blog_service.createBlog(blog);
     
     // 返回创建结果
-    model::ApiResponse api_response(0, "博客创建成功", new_blog.toJson());
+    model::ApiResponse api_response(200, "博客创建成功", new_blog.toJson());
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     
@@ -193,7 +193,7 @@ int32_t BlogUpdateServlet::handle(sylar::http::HttpRequest::ptr request,
         return 0;
     }
     
-    model::ApiResponse api_response(0, "博客更新成功");
+    model::ApiResponse api_response(200, "博客更新成功");
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     
@@ -236,7 +236,7 @@ int32_t BlogDeleteServlet::handle(sylar::http::HttpRequest::ptr request,
         return 0;
     }
     
-    model::ApiResponse api_response(0, "博客删除成功");
+    model::ApiResponse api_response(200, "博客删除成功");
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     
@@ -272,7 +272,7 @@ int32_t BlogDetailServlet::handle(sylar::http::HttpRequest::ptr request,
     // 增加阅读量
     blog_service.increaseViewCount(blog_id);
     
-    model::ApiResponse api_response(0, "success", blog.toJson());
+    model::ApiResponse api_response(200, "success", blog.toJson());
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
     

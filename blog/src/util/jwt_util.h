@@ -5,16 +5,38 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <random>
 #include <unordered_map>
 #include <shared_mutex>
 #include <optional>
-#include <jwt-cpp/jwt.h>
-#include <jwt-cpp/base.h>
-
-
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+#include "sylar/config.h"
+#include "sylar/util.h"
 
 namespace blog_server {
 namespace util {
+
+struct JWTClaims {
+    int64_t user_id;
+    std::string username;
+    std::vector<std::string> roles;
+    std::string jti;
+    int64_t iat; // 签发时间
+    int64_t exp; // 过期时间
+    std::string issuer;
+    
+    JWTClaims() : user_id(0), iat(0), exp(0) {}
+    
+    bool isValid() const {
+        return user_id > 0 && !username.empty() && exp > 0;
+    }
+    
+    bool isExpired() const {
+        return time(nullptr) > exp;
+    }
+};
 
 class JWTUtil {
 public:
@@ -39,10 +61,10 @@ public:
     /**
      * @brief 验证JWT令牌
      * @param token JWT令牌
-     * @param decoded_jwt 输出参数，解码后的JWT对象
+     * @param claims 输出参数，解码后的声明
      * @return 验证成功返回true
      */
-    static bool verifyToken(const std::string& token, jwt::decoded_jwt& decoded_jwt);
+    static bool verifyToken(const std::string& token, JWTClaims& claims);
     
     /**
      * @brief 验证JWT令牌
@@ -114,32 +136,41 @@ public:
     static void cleanupExpiredBlacklist();
     
     /**
-     * @brief 获取JWT密钥（用于轮换）
+     * @brief 获取JWT密钥
      */
     static std::string getCurrentSecret();
 
 private:
-    static std::string getJWTSecret();
+    // Base64 URL 编码
+    static std::string base64UrlEncode(const std::string& data);
+    static std::string base64UrlDecode(const std::string& data);
+    
+    // HMAC SHA256 签名
+    static std::string hmacSha256(const std::string& key, const std::string& data);
+    
+    // JSON 序列化和反序列化
+    static std::string serializeClaims(const JWTClaims& claims);
+    static bool parseClaims(const std::string& json, JWTClaims& claims);
+    
+    // 令牌解析和验证
+    static bool parseToken(const std::string& token, JWTClaims& claims, std::string& signature);
+    static bool validateTokenStructure(const JWTClaims& claims);
     static std::string generateJTI();
-    static bool validateTokenStructure(const jwt::decoded_jwt& decoded_jwt);
     
-    /**
-     * @brief 安全地解码令牌
-     * @param token JWT令牌
-     * @return 解码后的令牌对象，失败返回空对象
-     */
-    static std::optional<jwt::decoded_jwt> safeDecode(const std::string& token);
+    // 安全地解码令牌
+    static std::optional<JWTClaims> safeDecode(const std::string& token);
+
+    // 添加随机字符串生成方法
+    static std::string generateRandomString(size_t length);
     
-    // 使用Redis存储黑名单，key格式：jwt_blacklist:{jti}
+    // 黑名单管理
     static bool addToRedisBlacklist(const std::string& jti, time_t expire_time);
     static bool isInRedisBlacklist(const std::string& jti);
-    
-    // 使用MySQL存储黑名单（用于持久化）
     static bool addToMySQLBlacklist(const std::string& jti, const std::string& token, 
                                    int64_t user_id, time_t expire_time);
     static bool isInMySQLBlacklist(const std::string& jti);
-    
-    // 密钥管理
+
+private:
     static std::string current_secret_;
     static std::string previous_secret_;
     static time_t secret_rotation_time_;

@@ -4,7 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var vue = require('vue');
 var core = require('@vueuse/core');
-var bar = require('./bar2.js');
+var bar = require('./bar.js');
 var constants = require('./constants.js');
 var scrollbar = require('./scrollbar.js');
 var pluginVue_exportHelper = require('../../../_virtual/plugin-vue_export-helper.js');

@@ -86,6 +86,9 @@ public:
     typedef std::shared_ptr<RedisManager> ptr;
     typedef RWMutex RWMutexType;
     
+
+    RedisManager() = default;
+
     /**
      * @brief 初始化Redis管理器
      */
@@ -112,7 +115,6 @@ public:
     void addPool(const std::string& name, RedisPool::ptr pool);
 
 private:
-    RedisManager() = default;
     
 private:
     std::map<std::string, RedisPool::ptr> m_pools; ///< 连接池映射

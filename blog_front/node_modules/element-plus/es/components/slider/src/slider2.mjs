@@ -227,11 +227,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           min: _ctx.min,
           max: _ctx.max,
           precision: unref(precision),
-          debounce: _ctx.debounce,
           size: unref(sliderInputSize),
           "onUpdate:modelValue": unref(setFirstValue),
           onChange: unref(emitChange)
-        }, null, 8, ["model-value", "class", "step", "disabled", "controls", "min", "max", "precision", "debounce", "size", "onUpdate:modelValue", "onChange"])) : createCommentVNode("v-if", true)
+        }, null, 8, ["model-value", "class", "step", "disabled", "controls", "min", "max", "precision", "size", "onUpdate:modelValue", "onChange"])) : createCommentVNode("v-if", true)
       ], 10, ["id", "role", "aria-label", "aria-labelledby"]);
     };
   }

@@ -1,126 +1,292 @@
+// blog_server/service/user_service.cpp
 #include "user_service.h"
 #include "../util/crypto_util.h"
-#include <map>
-#include <vector>
+#include "../dao/user_dao.h"
 #include <algorithm>
-#include <mutex>
 
 namespace blog_server {
 namespace service {
 
-// 使用内存存储模拟数据库
-static std::map<int64_t, model::User> s_users;
-static std::map<std::string, int64_t> s_username_to_id;
-static std::mutex s_user_mutex;
-static int64_t s_next_user_id = 1;
+// 定义日志记录器
+static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
-UserService::UserService() {}
+/**
+ * @brief 构造函数
+ */
+UserService::UserService() {
+    SYLAR_LOG_DEBUG(g_logger) << "UserService initialized";
+    user_dao_=std::make_shared<dao::UserDao>();
+}
 
+/**
+ * @brief 设置用户数据访问对象
+ */
+void UserService::setUserDao(std::shared_ptr<dao::UserDao> user_dao) {
+    user_dao_=user_dao;
+    SYLAR_LOG_DEBUG(g_logger) << "UserDAO set for UserService";
+}
+
+/**
+ * @brief 用户注册
+ */
 model::User UserService::registerUser(const std::string& username, const std::string& password, 
                                      const std::string& nickname, const std::string& email) {
-    std::lock_guard<std::mutex> lock(s_user_mutex);
-    
-    // 检查用户名是否已存在
-    if (s_username_to_id.find(username) != s_username_to_id.end()) {
-        return model::User(); // 返回空对象表示注册失败
+    if (!user_dao_) {
+        SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
+        return model::User();
     }
     
-    // 创建用户
+    // 验证输入参数
+    if (username.empty() || password.empty()) {
+        SYLAR_LOG_ERROR(g_logger) << "Username or password is empty";
+        return model::User();
+    }
+    
+    // 检查用户名是否已存在
+    if (user_dao_->existsUsername(username)) {
+        SYLAR_LOG_WARN(g_logger) << "Username already exists: " << username;
+        return model::User();
+    }
+    
+    // 检查邮箱是否已存在（如果提供了邮箱）
+    if (!email.empty() && user_dao_->existsEmail(email)) {
+        SYLAR_LOG_WARN(g_logger) << "Email already exists: " << email;
+        return model::User();
+    }
+    
+    // 创建用户对象
     model::User user;
-    user.id = generateUserId();
     user.username = username;
     user.password = hashPassword(password);
     user.nickname = nickname.empty() ? username : nickname;
     user.email = email;
-    user.status = 1;
-    user.created_at = time(nullptr);
-    user.updated_at = time(nullptr);
+    user.status = 1; // 正常状态
     
     // 保存用户
-    s_users[user.id] = user;
-    s_username_to_id[username] = user.id;
+    if (!user_dao_->create(user)) {
+        SYLAR_LOG_ERROR(g_logger) << "Failed to create user: " << username;
+        return model::User();
+    }
     
+    SYLAR_LOG_INFO(g_logger) << "User registered successfully: " << username << " (ID: " << user.id << ")";
     return user;
 }
 
+/**
+ * @brief 用户登录
+ */
 model::User UserService::login(const std::string& username, const std::string& password) {
-    std::lock_guard<std::mutex> lock(s_user_mutex);
-    
-    auto it = s_username_to_id.find(username);
-    if (it == s_username_to_id.end()) {
-        return model::User(); // 用户不存在
+    if (!user_dao_) {
+        SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
+        return model::User();
     }
     
-    auto user_it = s_users.find(it->second);
-    if (user_it == s_users.end()) {
+    if (username.empty() || password.empty()) {
+        SYLAR_LOG_ERROR(g_logger) << "Username or password is empty";
+        return model::User();
+    }
+    
+    // 根据用户名查找用户
+    model::User user = user_dao_->findByUsername(username);
+    if (user.id == 0) {
+        SYLAR_LOG_WARN(g_logger) << "User not found: " << username;
+        return model::User();
+    }
+    
+    // 检查用户状态
+    if (user.status != 1) {
+        SYLAR_LOG_WARN(g_logger) << "User is disabled: " << username;
         return model::User();
     }
     
     // 验证密码
-    if (!verifyPassword(password, user_it->second.password)) {
+    if (!verifyPassword(password, user.password)) {
+        SYLAR_LOG_WARN(g_logger) << "Password verification failed for user: " << username;
         return model::User();
     }
     
-    return user_it->second;
+    SYLAR_LOG_INFO(g_logger) << "User logged in successfully: " << username << " (ID: " << user.id << ")";
+    return user;
 }
 
+/**
+ * @brief 根据ID获取用户信息
+ */
 model::User UserService::getUserById(int64_t user_id) {
-    std::lock_guard<std::mutex> lock(s_user_mutex);
-    
-    auto it = s_users.find(user_id);
-    if (it != s_users.end()) {
-        return it->second;
+    if (!user_dao_) {
+        SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
+        return model::User();
     }
-    return model::User();
+    
+    if (user_id <= 0) {
+        SYLAR_LOG_ERROR(g_logger) << "Invalid user ID: " << user_id;
+        return model::User();
+    }
+    
+    model::User user = user_dao_->findById(user_id);
+    if (user.id == 0) {
+        SYLAR_LOG_DEBUG(g_logger) << "User not found by ID: " << user_id;
+    }
+    
+    return user;
 }
 
+/**
+ * @brief 根据用户名获取用户信息
+ */
 model::User UserService::getUserByUsername(const std::string& username) {
-    std::lock_guard<std::mutex> lock(s_user_mutex);
-    
-    auto it = s_username_to_id.find(username);
-    if (it != s_username_to_id.end()) {
-        return getUserById(it->second);
+    if (!user_dao_) {
+        SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
+        return model::User();
     }
-    return model::User();
+    
+    if (username.empty()) {
+        SYLAR_LOG_ERROR(g_logger) << "Username is empty";
+        return model::User();
+    }
+    
+    model::User user = user_dao_->findByUsername(username);
+    if (user.id == 0) {
+        SYLAR_LOG_DEBUG(g_logger) << "User not found by username: " << username;
+    }
+    
+    return user;
 }
 
+/**
+ * @brief 更新用户信息
+ */
 bool UserService::updateUser(const model::User& user) {
-    std::lock_guard<std::mutex> lock(s_user_mutex);
-    
-    auto it = s_users.find(user.id);
-    if (it == s_users.end()) {
+    if (!user_dao_) {
+        SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
         return false;
     }
     
-    // 更新用户信息
-    model::User& existing_user = it->second;
-    existing_user.nickname = user.nickname;
-    existing_user.email = user.email;
-    existing_user.avatar = user.avatar;
-    existing_user.bio = user.bio;
-    existing_user.updated_at = time(nullptr);
+    if (user.id <= 0) {
+        SYLAR_LOG_ERROR(g_logger) << "Invalid user ID: " << user.id;
+        return false;
+    }
     
+    // 获取现有用户信息
+    model::User existing_user = user_dao_->findById(user.id);
+    if (existing_user.id == 0) {
+        SYLAR_LOG_ERROR(g_logger) << "User not found for update: " << user.id;
+        return false;
+    }
+    
+    // 创建更新对象，只更新允许修改的字段
+    model::User update_user = existing_user;
+    update_user.nickname = user.nickname;
+    update_user.email = user.email;
+    update_user.avatar = user.avatar;
+    update_user.bio = user.bio;
+    
+    // 执行更新
+    if (!user_dao_->update(update_user)) {
+        SYLAR_LOG_ERROR(g_logger) << "Failed to update user: " << user.id;
+        return false;
+    }
+    
+    SYLAR_LOG_INFO(g_logger) << "User updated successfully: " << user.id;
     return true;
 }
 
+/**
+ * @brief 验证用户密码
+ */
 bool UserService::validateUser(int64_t user_id, const std::string& password) {
-    auto user = getUserById(user_id);
-    if (user.id == 0) {
+    if (!user_dao_) {
+        SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
         return false;
     }
     
-    return verifyPassword(password, user.password);
+    if (user_id <= 0 || password.empty()) {
+        SYLAR_LOG_ERROR(g_logger) << "Invalid user ID or password";
+        return false;
+    }
+    
+    model::User user = user_dao_->findById(user_id);
+    if (user.id == 0) {
+        SYLAR_LOG_ERROR(g_logger) << "User not found for validation: " << user_id;
+        return false;
+    }
+    
+    bool valid = verifyPassword(password, user.password);
+    SYLAR_LOG_DEBUG(g_logger) << "Password validation for user " << user_id << ": " << (valid ? "valid" : "invalid");
+    return valid;
 }
 
-int64_t UserService::generateUserId() {
-    return s_next_user_id++;
+/**
+ * @brief 更新用户密码
+ */
+bool UserService::updatePassword(int64_t user_id, const std::string& old_password, const std::string& new_password) {
+    if (!user_dao_) {
+        SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
+        return false;
+    }
+    
+    if (user_id <= 0 || old_password.empty() || new_password.empty()) {
+        SYLAR_LOG_ERROR(g_logger) << "Invalid parameters for password update";
+        return false;
+    }
+    
+    // 验证旧密码
+    if (!validateUser(user_id, old_password)) {
+        SYLAR_LOG_ERROR(g_logger) << "Old password verification failed for user: " << user_id;
+        return false;
+    }
+    
+    // 加密新密码并更新
+    std::string hashed_new_password = hashPassword(new_password);
+    if (!user_dao_->updatePassword(user_id, hashed_new_password)) {
+        SYLAR_LOG_ERROR(g_logger) << "Failed to update password for user: " << user_id;
+        return false;
+    }
+    
+    SYLAR_LOG_INFO(g_logger) << "Password updated successfully for user: " << user_id;
+    return true;
 }
 
+/**
+ * @brief 重置用户密码
+ */
+bool UserService::resetPassword(int64_t user_id, const std::string& new_password) {
+    if (!user_dao_) {
+        SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
+        return false;
+    }
+    
+    if (user_id <= 0 || new_password.empty()) {
+        SYLAR_LOG_ERROR(g_logger) << "Invalid parameters for password reset";
+        return false;
+    }
+    
+    // 加密新密码并更新
+    std::string hashed_new_password = hashPassword(new_password);
+    if (!user_dao_->updatePassword(user_id, hashed_new_password)) {
+        SYLAR_LOG_ERROR(g_logger) << "Failed to reset password for user: " << user_id;
+        return false;
+    }
+    
+    SYLAR_LOG_INFO(g_logger) << "Password reset successfully for user: " << user_id;
+    return true;
+}
+
+
+
+
+/**
+ * @brief 对密码进行加密
+ */
 std::string UserService::hashPassword(const std::string& password) {
-    // 实际项目中应该使用更安全的哈希算法
-    return util::CryptoUtil::md5("salt_" + password);
+    // 使用 CryptoUtil 进行密码加密
+    // 实际项目中应该使用更安全的加密方式，如 bcrypt
+    return util::CryptoUtil::md5("blog_salt_" + password);
 }
 
+/**
+ * @brief 验证密码
+ */
 bool UserService::verifyPassword(const std::string& password, const std::string& hashed) {
     return hashPassword(password) == hashed;
 }

@@ -489,7 +489,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /usr/bin/cmake --regenerate-during-build -S/home/zzzhhh/MyLinux/Project/sylar-from-scratch -B/home/zzzhhh/MyLinux/Project/sylar-from-scratch/build
+  command = /usr/bin/cmake --regenerate-during-build -S/home/zzzhhh/MyLinux/Project/blog_system--Vue-sylarc- -B/home/zzzhhh/MyLinux/Project/blog_system--Vue-sylarc-/build
   description = Re-running CMake...
   generator = 1
 

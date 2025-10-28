@@ -89,7 +89,7 @@ const handleSubmit = async () => {
     loading.value = true
     const response = await updateProfile(form)
     
-    if (response.data.code === 0) {
+    if (response.data.code === 200) {
       ElMessage.success('资料更新成功')
       // 更新 store 中的用户信息
       await authStore.fetchUserInfo()
