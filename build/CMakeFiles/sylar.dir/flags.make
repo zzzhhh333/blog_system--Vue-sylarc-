@@ -69,11 +69,5 @@ CXX_FLAGS =  -std=c++11 -O0 -ggdb -Wall -Werror -g -rdynamic -fPIC -Wno-unused-f
 
 # Custom defines: CMakeFiles/sylar.dir/sylar/daemon.cc.o_DEFINES = __FILE__="sylar/daemon.cc"
 
-# Custom defines: CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o_DEFINES = __FILE__="sylar/db/mysql_wrapper.cc"
-
-# Custom defines: CMakeFiles/sylar.dir/sylar/db/mysql.cc.o_DEFINES = __FILE__="sylar/db/mysql.cc"
-
-# Custom defines: CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o_DEFINES = __FILE__="sylar/db/redis_wrapper.cc"
-
-# Custom defines: CMakeFiles/sylar.dir/sylar/db/redis.cc.o_DEFINES = __FILE__="sylar/db/redis.cc"
+# Custom defines: CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o_DEFINES = __FILE__="sylar/db/mysql_connector.cc"
 

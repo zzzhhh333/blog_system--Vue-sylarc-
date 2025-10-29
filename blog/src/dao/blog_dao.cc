@@ -1,6 +1,5 @@
-// blog_server/dao/blog_dao.cpp
 #include "blog_dao.h"
-#include "sylar/db/mysql.h"
+#include "sylar/log.h"
 #include <sstream>
 #include <iomanip>
 
@@ -9,429 +8,567 @@ namespace dao {
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
-BlogDao::BlogDao() {
+BlogDao::BlogDao() 
+    : BaseDao("blogs") {
     logger_ = g_logger;
     SYLAR_LOG_DEBUG(logger_) << "BlogDao initialized";
-    db_=sylar::MySQLMgr::GetInstance()->getConnection();
+    
+    // 从连接池获取数据库连接
+    if (!acquireConnection()) {
+        SYLAR_LOG_ERROR(logger_) << "Failed to acquire database connection";
+    }
+}
+
+BlogDao::~BlogDao()
+{
+    // 释放数据库连接
+    releaseConnection();
+
+    SYLAR_LOG_DEBUG(logger_) << "BlogDao destroyed";
 }
 
 bool BlogDao::create(model::Blog& blog) {
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
         return false;
     }
     
-    auto stmt = db_->prepare(
-        "INSERT INTO blogs (title, content, summary, author_id, author_name, status, view_count, created_at, updated_at, published_at) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-    );
-    
-    if (!stmt) {
-        SYLAR_LOG_ERROR(logger_) << "Prepare insert statement failed";
+    try {
+        auto stmt = connection_->prepareStatement(
+            "INSERT INTO blogs (title, content, summary, author_id, author_name, "
+            "status, view_count, created_at, updated_at, published_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        );
+        
+        if (!stmt) {
+            SYLAR_LOG_ERROR(logger_) << "Prepare insert statement failed";
+            return false;
+        }
+        
+        time_t now = time(nullptr);
+        blog.setCreatedAt(now);
+        blog.setUpdatedAt(now);
+        
+        // 如果状态是已发布，设置发布时间
+        if (blog.getStatus() == model::Blog::STATUS_PUBLISHED && blog.getPublishedAt() == 0) {
+            blog.setPublishedAt(now);
+        }
+        
+        stmt->setString(1, blog.getTitle());
+        stmt->setString(2, blog.getContent());
+        stmt->setString(3, blog.getSummary());
+        stmt->setInt64(4, blog.getAuthorId());
+        stmt->setString(5, blog.getAuthorName());
+        stmt->setInt32(6, blog.getStatus());
+        stmt->setInt32(7, blog.getViewCount());
+        stmt->setInt64(8, blog.getCreatedAt());
+        stmt->setInt64(9, blog.getUpdatedAt());
+        
+        if (blog.getPublishedAt() > 0) {
+            stmt->setInt64(10, blog.getPublishedAt());
+        } else {
+            stmt->setNull(10);
+        }
+        
+        bool result = stmt->execute();
+        if (!result) {
+            SYLAR_LOG_ERROR(logger_) << "Insert blog failed";
+            return false;
+        }
+        
+        // 获取自增ID
+        blog.setId(connection_->getLastInsertId());
+        
+        SYLAR_LOG_INFO(logger_) << "Blog created successfully, ID: " << blog.getId() 
+                               << ", title: " << blog.getTitle();
+        
+        return true;
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Create blog exception: " << e.what();
         return false;
     }
-    
-    time_t now = time(nullptr);
-    blog.created_at = now;
-    blog.updated_at = now;
-    
-    // 如果状态是已发布，设置发布时间
-    if (blog.status == 1 && blog.published_at == 0) {
-        blog.published_at = now;
-    }
-    
-    stmt->setString(1, blog.title);
-    stmt->setString(2, blog.content);
-    stmt->setString(3, blog.summary);
-    stmt->setInt64(4, blog.author_id);
-    stmt->setString(5, blog.author_name);
-    stmt->setInt(6, blog.status);
-    stmt->setInt(7, blog.view_count);
-    stmt->setInt64(8, blog.created_at);
-    stmt->setInt64(9, blog.updated_at);
-    
-    if (blog.published_at > 0) {
-        stmt->setInt64(10, blog.published_at);
-    } else {
-        stmt->setNull(10);
-    }
-    
-    auto result = stmt->execute();
-    if (!result) {
-        SYLAR_LOG_ERROR(logger_) << "Insert blog failed: " << db_->getError();
-        return false;
-    }
-    
-    blog.id =stmt->getLastInsertId();
-    SYLAR_LOG_INFO(logger_) << "Blog created successfully, ID: " << blog.id 
-                           << ", title: " << blog.title;
-    
-    return true;
 }
 
-model::Blog BlogDao::findById(int64_t id) {
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
+model::Blog BlogDao::findById(int64_t id, bool use_cache) {
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
         return model::Blog();
     }
     
-    auto stmt = db_->prepare(
-        "SELECT id, title, content, summary, author_id, author_name, status, view_count, created_at, updated_at, published_at "
-        "FROM blogs WHERE id = ? AND status != 2"
-    );
-    
-    if (!stmt) {
-        SYLAR_LOG_ERROR(logger_) << "Prepare select statement failed";
+    try {
+        // 如果有缓存实现，可以在这里添加缓存逻辑
+        if (use_cache) {
+            // TODO: 实现缓存逻辑
+        }
+        
+        auto stmt = connection_->prepareStatement(
+            "SELECT id, title, content, summary, author_id, author_name, status, "
+            "view_count, created_at, updated_at, published_at "
+            "FROM blogs WHERE id = ? AND status != ?"
+        );
+        
+        if (!stmt) {
+            SYLAR_LOG_ERROR(logger_) << "Prepare select statement failed";
+            return model::Blog();
+        }
+        
+        stmt->setInt64(1, id);
+        stmt->setInt32(2, model::Blog::STATUS_DELETED);
+        
+        auto result = stmt->executeQuery();
+        if (!result || !result->next()) {
+            SYLAR_LOG_DEBUG(logger_) << "Blog not found, ID: " << id;
+            return model::Blog();
+        }
+        
+        SYLAR_LOG_DEBUG(logger_) << "Blog found, ID: " << id;
+        return extractEntityFromResult(result);
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Find blog by ID exception: " << e.what();
         return model::Blog();
     }
-    
-    stmt->setInt64(1, id);
-    auto result = stmt->query();
-    
-    if (!result || !result->next()) {
-        SYLAR_LOG_DEBUG(logger_) << "Blog not found, ID: " << id;
-        return model::Blog();
-    }
-    
-    SYLAR_LOG_DEBUG(logger_) << "Blog found, ID: " << id;
-    return resultToBlog(result);
 }
 
 bool BlogDao::update(const model::Blog& blog) {
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
         return false;
     }
     
-    auto stmt = db_->prepare(
-        "UPDATE blogs SET title = ?, content = ?, summary = ?, status = ?, updated_at = ? "
-        "WHERE id = ?"
-    );
-    
-    if (!stmt) {
-        SYLAR_LOG_ERROR(logger_) << "Prepare update statement failed";
+    try {
+        auto stmt = connection_->prepareStatement(
+            "UPDATE blogs SET title = ?, content = ?, summary = ?, status = ?, "
+            "author_name = ?, updated_at = ? WHERE id = ?"
+        );
+        
+        if (!stmt) {
+            SYLAR_LOG_ERROR(logger_) << "Prepare update statement failed";
+            return false;
+        }
+        
+        time_t now = time(nullptr);
+        
+        stmt->setString(1, blog.getTitle());
+        stmt->setString(2, blog.getContent());
+        stmt->setString(3, blog.getSummary());
+        stmt->setInt32(4, blog.getStatus());
+        stmt->setString(5, blog.getAuthorName());
+        stmt->setInt64(6, now);
+        stmt->setInt64(7, blog.getId());
+        
+        int64_t affected = stmt->executeUpdate();
+        if (affected == 0) {
+            SYLAR_LOG_ERROR(logger_) << "Update blog failed, blog ID: " << blog.getId();
+            return false;
+        }
+        
+        SYLAR_LOG_INFO(logger_) << "Blog updated successfully, ID: " << blog.getId();
+        return true;
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Update blog exception: " << e.what();
         return false;
     }
-    
-    time_t now = time(nullptr);
-    
-    stmt->setString(1, blog.title);
-    stmt->setString(2, blog.content);
-    stmt->setString(3, blog.summary);
-    stmt->setInt(4, blog.status);
-    stmt->setInt64(5, now);
-    stmt->setInt64(6, blog.id);
-    
-    auto result = stmt->execute();
-    if (!result) {
-        SYLAR_LOG_ERROR(logger_) << "Update blog failed: " << db_->getError()
-                                << ", blog ID: " << blog.id;
-        return false;
-    }
-    
-    SYLAR_LOG_INFO(logger_) << "Blog updated successfully, ID: " << blog.id;
-    return true;
 }
 
-bool BlogDao::remove(int64_t id) {
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
+bool BlogDao::remove(int64_t id, bool soft_delete) {
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
         return false;
     }
     
-    // 软删除：将状态设置为2（已删除）
-    auto stmt = db_->prepare("UPDATE blogs SET status = 2, updated_at = ? WHERE id = ?");
-    if (!stmt) {
-        SYLAR_LOG_ERROR(logger_) << "Prepare delete statement failed";
+    try {
+        if (soft_delete) {
+            // 软删除：将状态设置为已删除
+            auto stmt = connection_->prepareStatement(
+                "UPDATE blogs SET status = ?, updated_at = ? WHERE id = ?"
+            );
+            
+            if (!stmt) {
+                SYLAR_LOG_ERROR(logger_) << "Prepare soft delete statement failed";
+                return false;
+            }
+            
+            time_t now = time(nullptr);
+            stmt->setInt32(1, model::Blog::STATUS_DELETED);
+            stmt->setInt64(2, now);
+            stmt->setInt64(3, id);
+            
+            int64_t affected = stmt->executeUpdate();
+            if (affected == 0) {
+                SYLAR_LOG_ERROR(logger_) << "Soft delete blog failed, ID: " << id;
+                return false;
+            }
+            
+            SYLAR_LOG_INFO(logger_) << "Blog soft deleted successfully, ID: " << id;
+            return true;
+            
+        } else {
+            // 硬删除：直接从数据库删除
+            auto stmt = connection_->prepareStatement("DELETE FROM blogs WHERE id = ?");
+            
+            if (!stmt) {
+                SYLAR_LOG_ERROR(logger_) << "Prepare hard delete statement failed";
+                return false;
+            }
+            
+            stmt->setInt64(1, id);
+            int64_t affected = stmt->executeUpdate();
+            
+            if (affected == 0) {
+                SYLAR_LOG_ERROR(logger_) << "Hard delete blog failed, ID: " << id;
+                return false;
+            }
+            
+            SYLAR_LOG_INFO(logger_) << "Blog hard deleted successfully, ID: " << id;
+            return true;
+        }
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Remove blog exception: " << e.what();
         return false;
     }
-    
-    time_t now = time(nullptr);
-    stmt->setInt64(1, now);
-    stmt->setInt64(2, id);
-    
-    auto result = stmt->execute();
-    if (!result) {
-        SYLAR_LOG_ERROR(logger_) << "Delete blog failed: " << db_->getError()
-                                << ", blog ID: " << id;
-        return false;
-    }
-    
-    SYLAR_LOG_INFO(logger_) << "Blog deleted successfully, ID: " << id;
-    return true;
 }
 
-std::vector<model::Blog> BlogDao::findAll() {
-    return findByCondition("status != 2 ORDER BY created_at DESC");
+std::vector<model::Blog> BlogDao::findAll(const std::string& order_by) {
+    std::string condition = "status != " + std::to_string(model::Blog::STATUS_DELETED);
+    std::string actual_order_by = order_by.empty() ? "created_at DESC" : order_by;
+    
+    return findByCondition(condition, actual_order_by);
 }
 
-std::vector<model::Blog> BlogDao::findByCondition(const std::string& condition) {
+std::vector<model::Blog> BlogDao::findByCondition(const std::string& condition, 
+                                                const std::string& order_by, 
+                                                int limit) {
     std::vector<model::Blog> blogs;
     
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
         return blogs;
     }
     
-    std::string sql = "SELECT id, title, content, summary, author_id, author_name, status, view_count, created_at, updated_at, published_at "
-                      "FROM blogs";
-    if (!condition.empty()) {
-        sql += " WHERE " + condition;
-    }
-    
-    auto result = db_->query(sql);
-    if (!result) {
-        SYLAR_LOG_ERROR(logger_) << "Query blogs failed: " << db_->getError();
+    try {
+        std::string sql = "SELECT id, title, content, summary, author_id, author_name, "
+                         "status, view_count, created_at, updated_at, published_at "
+                         "FROM blogs";
+        
+        if (!condition.empty()) {
+            sql += " WHERE " + condition;
+        }
+        
+        if (!order_by.empty()) {
+            sql += " ORDER BY " + order_by;
+        }
+        
+        if (limit > 0) {
+            sql += " LIMIT " + std::to_string(limit);
+        }
+        
+        auto result = connection_->executeQuery(sql);
+        blogs = extractEntitiesFromResult(result);
+        
+        SYLAR_LOG_DEBUG(logger_) << "Found " << blogs.size() << " blogs with condition: " 
+                                << condition;
+        return blogs;
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Find blogs by condition exception: " << e.what();
         return blogs;
     }
-    
-    while (result->next()) {
-        blogs.push_back(resultToBlog(result));
-    }
-    
-    SYLAR_LOG_DEBUG(logger_) << "Found " << blogs.size() << " blogs with condition: " << condition;
-    return blogs;
 }
 
-std::vector<model::Blog> BlogDao::findPage(int page, int page_size, const std::string& order_by) {
-    std::vector<model::Blog> blogs;
+std::vector<model::Blog> BlogDao::findPage(int page, int page_size, 
+                                         const std::string& condition, 
+                                         const std::string& order_by) {
+    std::string actual_condition = condition.empty() ? 
+        "status != " + std::to_string(model::Blog::STATUS_DELETED) : condition;
     
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
-        return blogs;
-    }
+    std::string actual_order_by = order_by.empty() ? "created_at DESC" : order_by;
     
-    if (page < 1) page = 1;
-    if (page_size < 1) page_size = 10;
+    std::string sql = buildPaginationSQL(page, page_size, actual_condition, actual_order_by);
     
-    std::string sql = "SELECT id, title, content, summary, author_id, author_name, status, view_count, created_at, updated_at, published_at "
-                      "FROM blogs WHERE status != 2";
-    
-    if (!order_by.empty()) {
-        sql += " ORDER BY " + order_by;
-    } else {
-        sql += " ORDER BY created_at DESC";
-    }
-    
-    sql += " LIMIT ? OFFSET ?";
-    
-    auto stmt = db_->prepare(sql);
-    if (!stmt) {
-        SYLAR_LOG_ERROR(logger_) << "Prepare paged query statement failed";
-        return blogs;
-    }
-    
-    int offset = (page - 1) * page_size;
-    stmt->setInt(1, page_size);
-    stmt->setInt(2, offset);
-    
-    auto result = stmt->query();
-    if (!result) {
-        SYLAR_LOG_ERROR(logger_) << "Execute paged query failed: " << db_->getError();
-        return blogs;
-    }
-    
-    while (result->next()) {
-        blogs.push_back(resultToBlog(result));
-    }
-    
-    SYLAR_LOG_DEBUG(logger_) << "Found " << blogs.size() << " blogs on page " << page 
-                            << " (size: " << page_size << ")";
-    return blogs;
+    auto result = executeQuery(sql);
+    return extractEntitiesFromResult(result);
 }
 
-int64_t BlogDao::count() {
-    return countByCondition("status != 2");
-}
-
-int64_t BlogDao::countByCondition(const std::string& condition) {
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
+int64_t BlogDao::count(const std::string& condition) {
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
         return 0;
     }
     
-    std::string sql = "SELECT COUNT(*) FROM blogs";
-    if (!condition.empty()) {
-        sql += " WHERE " + condition;
-    }
-    
-    auto result = db_->query(sql);
-    if (!result || !result->next()) {
-        SYLAR_LOG_ERROR(logger_) << "Count blogs failed: " << db_->getError();
+    try {
+        std::string sql = buildCountSQL(condition);
+        auto result = connection_->executeQuery(sql);
+        
+        if (!result || !result->next()) {
+            SYLAR_LOG_ERROR(logger_) << "Count blogs failed";
+            return 0;
+        }
+        
+        int64_t count = result->getRow().getInt64(0);
+        SYLAR_LOG_DEBUG(logger_) << "Blog count: " << count << " with condition: " << condition;
+        return count;
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Count blogs exception: " << e.what();
         return 0;
     }
-    
-    int64_t count = result->getInt64(0);
-    SYLAR_LOG_DEBUG(logger_) << "Blog count: " << count << " with condition: " << condition;
-    return count;
 }
 
-std::vector<model::Blog> BlogDao::findByAuthor(int64_t author_id) {
-    return findByCondition("author_id = " + std::to_string(author_id) + " AND status != 2 ORDER BY created_at DESC");
+std::vector<model::Blog> BlogDao::findByAuthor(int64_t author_id, bool include_deleted) {
+    std::string condition = "author_id = " + std::to_string(author_id);
+    if (!include_deleted) {
+        condition += " AND status != " + std::to_string(model::Blog::STATUS_DELETED);
+    }
+    
+    return findByCondition(condition, "created_at DESC");
 }
 
 std::vector<model::Blog> BlogDao::findByStatus(int status) {
-    return findByCondition("status = " + std::to_string(status) + " ORDER BY created_at DESC");
+    std::string condition = "status = " + std::to_string(status);
+    return findByCondition(condition, "created_at DESC");
 }
 
 std::vector<model::Blog> BlogDao::findPublished(int page, int page_size) {
-    return findPage(page, page_size, "published_at DESC");
+    std::string condition = "status = " + std::to_string(model::Blog::STATUS_PUBLISHED);
+    return findPage(page, page_size, condition, "published_at DESC");
 }
 
 bool BlogDao::updateViewCount(int64_t blog_id, int new_count) {
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
         return false;
     }
     
-    auto stmt = db_->prepare("UPDATE blogs SET view_count = ?, updated_at = ? WHERE id = ?");
-    if (!stmt) {
-        SYLAR_LOG_ERROR(logger_) << "Prepare update view count statement failed";
+    try {
+        auto stmt = connection_->prepareStatement(
+            "UPDATE blogs SET view_count = ?, updated_at = ? WHERE id = ?"
+        );
+        
+        if (!stmt) {
+            SYLAR_LOG_ERROR(logger_) << "Prepare update view count statement failed";
+            return false;
+        }
+        
+        time_t now = time(nullptr);
+        stmt->setInt32(1, new_count);
+        stmt->setInt64(2, now);
+        stmt->setInt64(3, blog_id);
+        
+        int64_t affected = stmt->executeUpdate();
+        if (affected == 0) {
+            SYLAR_LOG_ERROR(logger_) << "Update view count failed, blog ID: " << blog_id;
+            return false;
+        }
+        
+        SYLAR_LOG_DEBUG(logger_) << "View count updated for blog: " << blog_id 
+                                << ", count: " << new_count;
+        return true;
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Update view count exception: " << e.what();
         return false;
     }
-    
-    time_t now = time(nullptr);
-    stmt->setInt(1, new_count);
-    stmt->setInt64(2, now);
-    stmt->setInt64(3, blog_id);
-    
-    auto result = stmt->execute();
-    if (!result) {
-        SYLAR_LOG_ERROR(logger_) << "Update view count failed: " << db_->getError()
-                                << ", blog ID: " << blog_id;
-        return false;
-    }
-    
-    SYLAR_LOG_DEBUG(logger_) << "View count updated for blog: " << blog_id << ", count: " << new_count;
-    return true;
 }
 
 bool BlogDao::increaseViewCount(int64_t blog_id) {
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
         return false;
     }
     
-    auto stmt = db_->prepare("UPDATE blogs SET view_count = view_count + 1, updated_at = ? WHERE id = ?");
-    if (!stmt) {
-        SYLAR_LOG_ERROR(logger_) << "Prepare increase view count statement failed";
+    try {
+        auto stmt = connection_->prepareStatement(
+            "UPDATE blogs SET view_count = view_count + 1, updated_at = ? WHERE id = ?"
+        );
+        
+        if (!stmt) {
+            SYLAR_LOG_ERROR(logger_) << "Prepare increase view count statement failed";
+            return false;
+        }
+        
+        time_t now = time(nullptr);
+        stmt->setInt64(1, now);
+        stmt->setInt64(2, blog_id);
+        
+        int64_t affected = stmt->executeUpdate();
+        if (affected == 0) {
+            SYLAR_LOG_ERROR(logger_) << "Increase view count failed, blog ID: " << blog_id;
+            return false;
+        }
+        
+        SYLAR_LOG_DEBUG(logger_) << "View count increased for blog: " << blog_id;
+        return true;
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Increase view count exception: " << e.what();
         return false;
     }
-    
-    time_t now = time(nullptr);
-    stmt->setInt64(1, now);
-    stmt->setInt64(2, blog_id);
-    
-    auto result = stmt->execute();
-    if (!result) {
-        SYLAR_LOG_ERROR(logger_) << "Increase view count failed: " << db_->getError()
-                                << ", blog ID: " << blog_id;
-        return false;
-    }
-    
-    SYLAR_LOG_DEBUG(logger_) << "View count increased for blog: " << blog_id;
-    return true;
 }
 
 bool BlogDao::publishBlog(int64_t blog_id) {
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
         return false;
     }
     
-    auto stmt = db_->prepare("UPDATE blogs SET status = 1, published_at = ?, updated_at = ? WHERE id = ?");
-    if (!stmt) {
-        SYLAR_LOG_ERROR(logger_) << "Prepare publish blog statement failed";
+    try {
+        auto stmt = connection_->prepareStatement(
+            "UPDATE blogs SET status = ?, published_at = ?, updated_at = ? WHERE id = ?"
+        );
+        
+        if (!stmt) {
+            SYLAR_LOG_ERROR(logger_) << "Prepare publish blog statement failed";
+            return false;
+        }
+        
+        time_t now = time(nullptr);
+        stmt->setInt32(1, model::Blog::STATUS_PUBLISHED);
+        stmt->setInt64(2, now);
+        stmt->setInt64(3, now);
+        stmt->setInt64(4, blog_id);
+        
+        int64_t affected = stmt->executeUpdate();
+        if (affected == 0) {
+            SYLAR_LOG_ERROR(logger_) << "Publish blog failed, blog ID: " << blog_id;
+            return false;
+        }
+        
+        SYLAR_LOG_INFO(logger_) << "Blog published successfully, ID: " << blog_id;
+        return true;
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Publish blog exception: " << e.what();
         return false;
     }
-    
-    time_t now = time(nullptr);
-    stmt->setInt64(1, now);
-    stmt->setInt64(2, now);
-    stmt->setInt64(3, blog_id);
-    
-    auto result = stmt->execute();
-    if (!result) {
-        SYLAR_LOG_ERROR(logger_) << "Publish blog failed: " << db_->getError()
-                                << ", blog ID: " << blog_id;
-        return false;
-    }
-    
-    SYLAR_LOG_INFO(logger_) << "Blog published successfully, ID: " << blog_id;
-    return true;
 }
 
 std::vector<model::Blog> BlogDao::search(const std::string& keyword, int page, int page_size) {
-    std::vector<model::Blog> blogs;
-    
-    if (!db_) {
-        SYLAR_LOG_ERROR(logger_) << "Database connection not set";
-        return blogs;
-    }
-    
     if (keyword.empty()) {
         return findPublished(page, page_size);
     }
     
-    std::string sql = "SELECT id, title, content, summary, author_id, author_name, status, view_count, created_at, updated_at, published_at "
-                      "FROM blogs WHERE status = 1 AND (title LIKE ? OR content LIKE ?) "
-                      "ORDER BY published_at DESC LIMIT ? OFFSET ?";
-    
-    auto stmt = db_->prepare(sql);
-    if (!stmt) {
-        SYLAR_LOG_ERROR(logger_) << "Prepare search statement failed";
+    try {
+        auto stmt = connection_->prepareStatement(
+            "SELECT id, title, content, summary, author_id, author_name, status, "
+            "view_count, created_at, updated_at, published_at "
+            "FROM blogs WHERE status = ? AND (title LIKE ? OR content LIKE ?) "
+            "ORDER BY published_at DESC LIMIT ? OFFSET ?"
+        );
+        
+        if (!stmt) {
+            SYLAR_LOG_ERROR(logger_) << "Prepare search statement failed";
+            return {};
+        }
+        
+        std::string like_keyword = "%" + keyword + "%";
+        int offset = (page - 1) * page_size;
+        
+        stmt->setInt32(1, model::Blog::STATUS_PUBLISHED);
+        stmt->setString(2, like_keyword);
+        stmt->setString(3, like_keyword);
+        stmt->setInt32(4, page_size);
+        stmt->setInt32(5, offset);
+        
+        auto result = stmt->executeQuery();
+        std::vector<model::Blog> blogs = extractEntitiesFromResult(result);
+        
+        SYLAR_LOG_DEBUG(logger_) << "Found " << blogs.size() << " blogs with keyword: " << keyword;
         return blogs;
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Search blogs exception: " << e.what();
+        return {};
     }
-    
-    std::string like_keyword = "%" + keyword + "%";
-    int offset = (page - 1) * page_size;
-    
-    stmt->setString(1, like_keyword);
-    stmt->setString(2, like_keyword);
-    stmt->setInt(3, page_size);
-    stmt->setInt(4, offset);
-    
-    auto result = stmt->query();
-    if (!result) {
-        SYLAR_LOG_ERROR(logger_) << "Execute search failed: " << db_->getError();
-        return blogs;
-    }
-    
-    while (result->next()) {
-        blogs.push_back(resultToBlog(result));
-    }
-    
-    SYLAR_LOG_DEBUG(logger_) << "Found " << blogs.size() << " blogs with keyword: " << keyword;
-    return blogs;
 }
 
-model::Blog BlogDao::resultToBlog(sylar::MySQLWrapper::Result::ptr result) {
+std::vector<model::Blog> BlogDao::findPopular(int limit) {
+    std::string condition = "status = " + std::to_string(model::Blog::STATUS_PUBLISHED);
+    return findByCondition(condition, "view_count DESC", limit);
+}
+
+std::map<std::string, int64_t> BlogDao::getAuthorStats(int64_t author_id) {
+    std::map<std::string, int64_t> stats;
+    
+    if (!isConnectionValid()) {
+        SYLAR_LOG_ERROR(logger_) << "Database connection not available";
+        return stats;
+    }
+    
+    try {
+        auto stmt = connection_->prepareStatement(
+            "SELECT "
+            "COUNT(*) as total_blogs, "
+            "SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as published_blogs, "
+            "SUM(view_count) as total_views "
+            "FROM blogs WHERE author_id = ? AND status != ?"
+        );
+        
+        if (!stmt) {
+            SYLAR_LOG_ERROR(logger_) << "Prepare author stats statement failed";
+            return stats;
+        }
+        
+        stmt->setInt32(1, model::Blog::STATUS_PUBLISHED);
+        stmt->setInt64(2, author_id);
+        stmt->setInt32(3, model::Blog::STATUS_DELETED);
+        
+        auto result = stmt->executeQuery();
+        if (result && result->next()) {
+            auto row = result->getRow();
+            stats["total_blogs"] = row.getInt64("total_blogs");
+            stats["published_blogs"] = row.getInt64("published_blogs");
+            stats["total_views"] = row.getInt64("total_views");
+        }
+        
+        return stats;
+        
+    } catch (const std::exception& e) {
+        SYLAR_LOG_ERROR(logger_) << "Get author stats exception: " << e.what();
+        return stats;
+    }
+}
+
+bool BlogDao::isEntityEmpty(const model::Blog& blog) const {
+    return blog.getId() == 0;
+}
+
+model::Blog BlogDao::extractEntityFromResult(sylar::db::MySQLResult::ptr result) {
+    if (!result) {
+        return model::Blog();
+    }
+    return buildBlogFromRow(result->getRow());
+}
+
+model::Blog BlogDao::buildBlogFromRow(const sylar::db::MySQLRow& row) {
     model::Blog blog;
     
     try {
-        blog.id = result->getInt64("id");
-        blog.title = result->getString("title");
-        blog.content = result->getString("content");
-        blog.summary = result->getString("summary");
-        blog.author_id = result->getInt64("author_id");
-        blog.author_name = result->getString("author_name");
-        blog.status = result->getInt("status");
-        blog.view_count = result->getInt("view_count");
-        blog.created_at = result->getInt64("created_at");
-        blog.updated_at = result->getInt64("updated_at");
+        blog.setId(row.getInt64("id"));
+        blog.setTitle(row.getString("title"));
+        blog.setContent(row.getString("content"));
+        blog.setSummary(row.getString("summary"));
+        blog.setAuthorId(row.getInt64("author_id"));
+        blog.setAuthorName(row.getString("author_name"));
+        blog.setStatus(row.getInt32("status"));
+        blog.setViewCount(row.getInt32("view_count"));
+        blog.setCreatedAt(row.getInt64("created_at"));
+        blog.setUpdatedAt(row.getInt64("updated_at"));
         
-        if (!result->isNull("published_at")) {
-            blog.published_at = result->getInt64("published_at");
+        if (!row.isNull("published_at")) {
+            blog.setPublishedAt(row.getInt64("published_at"));
         }
+        
     } catch (const std::exception& e) {
-        SYLAR_LOG_ERROR(logger_) << "Convert result to blog failed: " << e.what();
+        SYLAR_LOG_ERROR(logger_) << "Build blog from row failed: " << e.what();
         return model::Blog();
     }
     
     return blog;
 }
-
-
 
 } // namespace dao
 } // namespace blog_server

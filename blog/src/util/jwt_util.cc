@@ -3,8 +3,8 @@
 #include "sylar/config.h"
 #include "sylar/env.h"
 #include "sylar/log.h"
-#include "sylar/db/redis.h"
-#include "sylar/db/mysql.h"
+#include "sylar/db/mysql_connector.h"
+#include "sylar/db/redis_connector.h"
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
 #include <openssl/rand.h>
@@ -176,6 +176,7 @@ std::string JWTUtil::serializeClaims(const JWTClaims& claims) {
     ss << "{";
     ss << "\"sub\":\"" << claims.user_id << "\",";
     ss << "\"username\":\"" << claims.username << "\",";
+    ss << "\"nickname\":\"" << claims.nickname << "\",";
     ss << "\"jti\":\"" << claims.jti << "\",";
     ss << "\"iat\":" << claims.iat << ",";
     ss << "\"exp\":" << claims.exp << ",";
@@ -215,6 +216,14 @@ bool JWTUtil::parseClaims(const std::string& json, JWTClaims& claims) {
         end = json.find("\"", pos);
         if (end == std::string::npos) return false;
         claims.username = json.substr(pos, end - pos);
+
+        // 提取nickname
+        pos = json.find("\"nickname\":\"", end);
+        if (pos == std::string::npos) return false;
+        pos += 12;
+        end = json.find("\"", pos);
+        if (end == std::string::npos) return false;
+        claims.nickname = json.substr(pos, end - pos);
         
         // 提取jti
         pos = json.find("\"jti\":\"", end);
@@ -304,12 +313,14 @@ bool JWTUtil::init() {
 
 std::string JWTUtil::generateToken(int64_t user_id, 
                                  const std::string& username, 
+                                 const std::string& nickname,
                                  const std::vector<std::string>& roles,
                                  int64_t expires_in) {
     try {
         JWTClaims claims;
         claims.user_id = user_id;
         claims.username = username;
+        claims.nickname = nickname;
         claims.roles = roles;
         claims.jti = generateJTI();
         claims.iat = time(nullptr);
@@ -436,6 +447,12 @@ std::string JWTUtil::getUsernameFromToken(const std::string& token) {
     return claims ? claims->username : "";
 }
 
+std::string JWTUtil::getNicknameFromToken(const std::string& token){
+    auto claims = safeDecode(token);
+    return claims ? claims->nickname : "";
+}
+
+
 std::vector<std::string> JWTUtil::getRolesFromToken(const std::string& token) {
     auto claims = safeDecode(token);
     return claims ? claims->roles : std::vector<std::string>{};
@@ -458,7 +475,7 @@ std::string JWTUtil::refreshToken(const std::string& token, int64_t expires_in) 
     }
     
     // 生成新令牌
-    auto new_token = generateToken(claims.user_id, claims.username, claims.roles, expires_in);
+    auto new_token = generateToken(claims.user_id, claims.username,claims.nickname, claims.roles, expires_in);
     
     // 将原令牌加入黑名单
     addToBlacklist(token);
@@ -469,6 +486,7 @@ std::string JWTUtil::refreshToken(const std::string& token, int64_t expires_in) 
 bool JWTUtil::validateTokenStructure(const JWTClaims& claims) {
     return claims.user_id > 0 && 
            !claims.username.empty() && 
+           !claims.nickname.empty() &&
            !claims.jti.empty() && 
            claims.iat > 0 && 
            claims.exp > claims.iat;
@@ -562,7 +580,7 @@ std::string JWTUtil::getCurrentSecret() {
 
 bool JWTUtil::addToRedisBlacklist(const std::string& jti, time_t expire_time) {
     try {
-        auto redis = sylar::RedisMgr::GetInstance()->getConnection();
+        auto redis = sylar::db::RedisManagerSingleton::GetInstance()->getConnection();
         if (!redis) {
             SYLAR_LOG_WARN(g_logger) << "Redis connection not available";
             return false;
@@ -584,7 +602,7 @@ bool JWTUtil::addToRedisBlacklist(const std::string& jti, time_t expire_time) {
 
 bool JWTUtil::isInRedisBlacklist(const std::string& jti) {
     try {
-        auto redis = sylar::RedisMgr::GetInstance()->getConnection();
+        auto redis = sylar::db::RedisManagerSingleton::GetInstance()->getConnection();
         if (!redis) {
             return false;
         }
@@ -601,14 +619,14 @@ bool JWTUtil::isInRedisBlacklist(const std::string& jti) {
 bool JWTUtil::addToMySQLBlacklist(const std::string& jti, const std::string& token, 
                                  int64_t user_id, time_t expire_time) {
     try {
-        auto db = sylar::MySQLMgr::GetInstance()->getConnection();
+        auto db = sylar::db::MySQLManagerSingleton::GetInstance()->getConnection();
         if (!db) {
             SYLAR_LOG_WARN(g_logger) << "MySQL connection not available";
             return false;
         }
         
         auto now = time(nullptr);
-        auto stmt = db->prepare(
+        auto stmt = db->prepareStatement(
             "INSERT INTO jwt_blacklist (jti, token, user_id, create_time, expire_time) "
             "VALUES (?, ?, ?, ?, ?)"
         );
@@ -619,9 +637,9 @@ bool JWTUtil::addToMySQLBlacklist(const std::string& jti, const std::string& tok
         
         stmt->setString(1, jti);
         stmt->setString(2, token);
-        stmt->setInt(3, user_id);
-        stmt->setInt(4, now);
-        stmt->setInt(5, expire_time);
+        stmt->setInt64(3, user_id);
+        stmt->setInt64(4, now);
+        stmt->setInt64(5, expire_time);
         
         auto result = stmt->execute();
         return result;
@@ -633,12 +651,12 @@ bool JWTUtil::addToMySQLBlacklist(const std::string& jti, const std::string& tok
 
 bool JWTUtil::isInMySQLBlacklist(const std::string& jti) {
     try {
-        auto db = sylar::MySQLMgr::GetInstance()->getConnection();
+        auto db = sylar::db::MySQLManagerSingleton::GetInstance()->getConnection();
         if (!db) {
             return false;
         }
         
-        auto stmt = db->prepare(
+        auto stmt = db->prepareStatement(
             "SELECT COUNT(*) FROM jwt_blacklist WHERE jti = ? AND expire_time > ?"
         );
         
@@ -648,9 +666,9 @@ bool JWTUtil::isInMySQLBlacklist(const std::string& jti) {
         
         auto now = time(nullptr);
         stmt->setString(1, jti);
-        stmt->setInt(2, now);
+        stmt->setInt64(2, now);
         
-        auto result = stmt->query();
+        auto result = stmt->executeQuery();
         return result?true : false;
     } catch (const std::exception& e) {
         SYLAR_LOG_ERROR(g_logger) << "Check MySQL blacklist failed: " << e.what();

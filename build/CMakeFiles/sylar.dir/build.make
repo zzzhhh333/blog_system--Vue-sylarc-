@@ -450,61 +450,19 @@ CMakeFiles/sylar.dir/sylar/daemon.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sylar.dir/sylar/daemon.cc.s"
 	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/daemon.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/daemon.cc -o CMakeFiles/sylar.dir/sylar/daemon.cc.s
 
-CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o: CMakeFiles/sylar.dir/flags.make
-CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o: /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql_wrapper.cc
-CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o: CMakeFiles/sylar.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzhhh/myProject/blog_system--Vue-sylarc-/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/mysql_wrapper.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o -MF CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o.d -o CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o -c /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql_wrapper.cc
+CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o: CMakeFiles/sylar.dir/flags.make
+CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o: /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql_connector.cc
+CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o: CMakeFiles/sylar.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzhhh/myProject/blog_system--Vue-sylarc-/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o"
+	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/mysql_connector.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o -MF CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o.d -o CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o -c /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql_connector.cc
 
-CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.i"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/mysql_wrapper.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql_wrapper.cc > CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.i
+CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.i"
+	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/mysql_connector.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql_connector.cc > CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.i
 
-CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.s"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/mysql_wrapper.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql_wrapper.cc -o CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.s
-
-CMakeFiles/sylar.dir/sylar/db/mysql.cc.o: CMakeFiles/sylar.dir/flags.make
-CMakeFiles/sylar.dir/sylar/db/mysql.cc.o: /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql.cc
-CMakeFiles/sylar.dir/sylar/db/mysql.cc.o: CMakeFiles/sylar.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzhhh/myProject/blog_system--Vue-sylarc-/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/sylar.dir/sylar/db/mysql.cc.o"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/mysql.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sylar.dir/sylar/db/mysql.cc.o -MF CMakeFiles/sylar.dir/sylar/db/mysql.cc.o.d -o CMakeFiles/sylar.dir/sylar/db/mysql.cc.o -c /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql.cc
-
-CMakeFiles/sylar.dir/sylar/db/mysql.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sylar.dir/sylar/db/mysql.cc.i"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/mysql.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql.cc > CMakeFiles/sylar.dir/sylar/db/mysql.cc.i
-
-CMakeFiles/sylar.dir/sylar/db/mysql.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sylar.dir/sylar/db/mysql.cc.s"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/mysql.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql.cc -o CMakeFiles/sylar.dir/sylar/db/mysql.cc.s
-
-CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o: CMakeFiles/sylar.dir/flags.make
-CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o: /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/redis_wrapper.cc
-CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o: CMakeFiles/sylar.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzhhh/myProject/blog_system--Vue-sylarc-/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/redis_wrapper.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o -MF CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o.d -o CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o -c /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/redis_wrapper.cc
-
-CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.i"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/redis_wrapper.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/redis_wrapper.cc > CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.i
-
-CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.s"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/redis_wrapper.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/redis_wrapper.cc -o CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.s
-
-CMakeFiles/sylar.dir/sylar/db/redis.cc.o: CMakeFiles/sylar.dir/flags.make
-CMakeFiles/sylar.dir/sylar/db/redis.cc.o: /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/redis.cc
-CMakeFiles/sylar.dir/sylar/db/redis.cc.o: CMakeFiles/sylar.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzhhh/myProject/blog_system--Vue-sylarc-/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/sylar.dir/sylar/db/redis.cc.o"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/redis.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sylar.dir/sylar/db/redis.cc.o -MF CMakeFiles/sylar.dir/sylar/db/redis.cc.o.d -o CMakeFiles/sylar.dir/sylar/db/redis.cc.o -c /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/redis.cc
-
-CMakeFiles/sylar.dir/sylar/db/redis.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sylar.dir/sylar/db/redis.cc.i"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/redis.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/redis.cc > CMakeFiles/sylar.dir/sylar/db/redis.cc.i
-
-CMakeFiles/sylar.dir/sylar/db/redis.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sylar.dir/sylar/db/redis.cc.s"
-	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/redis.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/redis.cc -o CMakeFiles/sylar.dir/sylar/db/redis.cc.s
+CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.s"
+	/usr/bin/g++ $(CXX_DEFINES) -D__FILE__=\"sylar/db/mysql_connector.cc\" $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zzhhh/myProject/blog_system--Vue-sylarc-/sylar/db/mysql_connector.cc -o CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.s
 
 # Object files for target sylar
 sylar_OBJECTS = \
@@ -535,10 +493,7 @@ sylar_OBJECTS = \
 "CMakeFiles/sylar.dir/sylar/uri.cc.o" \
 "CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o" \
 "CMakeFiles/sylar.dir/sylar/daemon.cc.o" \
-"CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o" \
-"CMakeFiles/sylar.dir/sylar/db/mysql.cc.o" \
-"CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o" \
-"CMakeFiles/sylar.dir/sylar/db/redis.cc.o"
+"CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o"
 
 # External object files for target sylar
 sylar_EXTERNAL_OBJECTS =
@@ -570,13 +525,10 @@ sylar_EXTERNAL_OBJECTS =
 /home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/sylar/uri.cc.o
 /home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/sylar/http/http_connection.cc.o
 /home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/sylar/daemon.cc.o
-/home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o
-/home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/sylar/db/mysql.cc.o
-/home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o
-/home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/sylar/db/redis.cc.o
+/home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o
 /home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/build.make
 /home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so: CMakeFiles/sylar.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/zzhhh/myProject/blog_system--Vue-sylarc-/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Linking CXX shared library /home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/zzhhh/myProject/blog_system--Vue-sylarc-/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Linking CXX shared library /home/zzhhh/myProject/blog_system--Vue-sylarc-/lib/libsylar.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sylar.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

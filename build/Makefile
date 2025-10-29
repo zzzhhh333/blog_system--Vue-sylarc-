@@ -815,101 +815,29 @@ sylar/daemon.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/daemon.cc.s
 .PHONY : sylar/daemon.cc.s
 
-sylar/db/mysql.o: sylar/db/mysql.cc.o
-.PHONY : sylar/db/mysql.o
+sylar/db/mysql_connector.o: sylar/db/mysql_connector.cc.o
+.PHONY : sylar/db/mysql_connector.o
 
 # target to build an object file
-sylar/db/mysql.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/mysql.cc.o
-.PHONY : sylar/db/mysql.cc.o
+sylar/db/mysql_connector.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.o
+.PHONY : sylar/db/mysql_connector.cc.o
 
-sylar/db/mysql.i: sylar/db/mysql.cc.i
-.PHONY : sylar/db/mysql.i
-
-# target to preprocess a source file
-sylar/db/mysql.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/mysql.cc.i
-.PHONY : sylar/db/mysql.cc.i
-
-sylar/db/mysql.s: sylar/db/mysql.cc.s
-.PHONY : sylar/db/mysql.s
-
-# target to generate assembly for a file
-sylar/db/mysql.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/mysql.cc.s
-.PHONY : sylar/db/mysql.cc.s
-
-sylar/db/mysql_wrapper.o: sylar/db/mysql_wrapper.cc.o
-.PHONY : sylar/db/mysql_wrapper.o
-
-# target to build an object file
-sylar/db/mysql_wrapper.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.o
-.PHONY : sylar/db/mysql_wrapper.cc.o
-
-sylar/db/mysql_wrapper.i: sylar/db/mysql_wrapper.cc.i
-.PHONY : sylar/db/mysql_wrapper.i
+sylar/db/mysql_connector.i: sylar/db/mysql_connector.cc.i
+.PHONY : sylar/db/mysql_connector.i
 
 # target to preprocess a source file
-sylar/db/mysql_wrapper.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.i
-.PHONY : sylar/db/mysql_wrapper.cc.i
+sylar/db/mysql_connector.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.i
+.PHONY : sylar/db/mysql_connector.cc.i
 
-sylar/db/mysql_wrapper.s: sylar/db/mysql_wrapper.cc.s
-.PHONY : sylar/db/mysql_wrapper.s
-
-# target to generate assembly for a file
-sylar/db/mysql_wrapper.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/mysql_wrapper.cc.s
-.PHONY : sylar/db/mysql_wrapper.cc.s
-
-sylar/db/redis.o: sylar/db/redis.cc.o
-.PHONY : sylar/db/redis.o
-
-# target to build an object file
-sylar/db/redis.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/redis.cc.o
-.PHONY : sylar/db/redis.cc.o
-
-sylar/db/redis.i: sylar/db/redis.cc.i
-.PHONY : sylar/db/redis.i
-
-# target to preprocess a source file
-sylar/db/redis.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/redis.cc.i
-.PHONY : sylar/db/redis.cc.i
-
-sylar/db/redis.s: sylar/db/redis.cc.s
-.PHONY : sylar/db/redis.s
+sylar/db/mysql_connector.s: sylar/db/mysql_connector.cc.s
+.PHONY : sylar/db/mysql_connector.s
 
 # target to generate assembly for a file
-sylar/db/redis.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/redis.cc.s
-.PHONY : sylar/db/redis.cc.s
-
-sylar/db/redis_wrapper.o: sylar/db/redis_wrapper.cc.o
-.PHONY : sylar/db/redis_wrapper.o
-
-# target to build an object file
-sylar/db/redis_wrapper.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.o
-.PHONY : sylar/db/redis_wrapper.cc.o
-
-sylar/db/redis_wrapper.i: sylar/db/redis_wrapper.cc.i
-.PHONY : sylar/db/redis_wrapper.i
-
-# target to preprocess a source file
-sylar/db/redis_wrapper.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.i
-.PHONY : sylar/db/redis_wrapper.cc.i
-
-sylar/db/redis_wrapper.s: sylar/db/redis_wrapper.cc.s
-.PHONY : sylar/db/redis_wrapper.s
-
-# target to generate assembly for a file
-sylar/db/redis_wrapper.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/redis_wrapper.cc.s
-.PHONY : sylar/db/redis_wrapper.cc.s
+sylar/db/mysql_connector.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/sylar/db/mysql_connector.cc.s
+.PHONY : sylar/db/mysql_connector.cc.s
 
 sylar/env.o: sylar/env.cc.o
 .PHONY : sylar/env.o
@@ -2071,18 +1999,9 @@ help:
 	@echo "... sylar/daemon.o"
 	@echo "... sylar/daemon.i"
 	@echo "... sylar/daemon.s"
-	@echo "... sylar/db/mysql.o"
-	@echo "... sylar/db/mysql.i"
-	@echo "... sylar/db/mysql.s"
-	@echo "... sylar/db/mysql_wrapper.o"
-	@echo "... sylar/db/mysql_wrapper.i"
-	@echo "... sylar/db/mysql_wrapper.s"
-	@echo "... sylar/db/redis.o"
-	@echo "... sylar/db/redis.i"
-	@echo "... sylar/db/redis.s"
-	@echo "... sylar/db/redis_wrapper.o"
-	@echo "... sylar/db/redis_wrapper.i"
-	@echo "... sylar/db/redis_wrapper.s"
+	@echo "... sylar/db/mysql_connector.o"
+	@echo "... sylar/db/mysql_connector.i"
+	@echo "... sylar/db/mysql_connector.s"
 	@echo "... sylar/env.o"
 	@echo "... sylar/env.i"
 	@echo "... sylar/env.s"

@@ -67,10 +67,8 @@ set(LIB_SRC
     sylar/uri.cc 
     sylar/http/http_connection.cc 
     sylar/daemon.cc 
-    sylar/db/mysql_wrapper.cc
-    sylar/db/mysql.cc
-    sylar/db/redis_wrapper.cc
-    sylar/db/redis.cc
+    sylar/db/mysql_connector.cc
+    sylar/db/redis_connector.cc
     )
 
 add_library(sylar SHARED ${LIB_SRC})
@@ -83,7 +81,7 @@ set(LIBS
     yaml-cpp
     jsoncpp
     hiredis
-    mysqlclient
+    mysqlcppconn
     OpenSSL::SSL
     OpenSSL::Crypto
 )

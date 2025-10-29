@@ -3,6 +3,7 @@
 
 #include "../model/user.h"
 #include "../dao/user_dao.h"
+#include "sylar/log.h"
 #include <memory>
 #include <string>
 

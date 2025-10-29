@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-    <el-tabs v-model="activeTab" type="card">
+    <el-tabs v-model="activeTab" type="card" @tab-change="handleTabChange">
       <el-tab-pane label="我的博客" name="blogs">
         <div class="tab-content">
           <el-button 
@@ -27,18 +27,47 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Plus } from '@element-plus/icons-vue'
 import BlogList from '../components/BlogList.vue'
 import BlogEditor from '../components/BlogEditor.vue'
 import UserProfile from '../components/UserProfile.vue'
 
-const activeTab = ref('blogs')
+const route = useRoute()
+const router = useRouter()
+
+// 从路由查询参数中获取激活的标签页
+const activeTab = ref(route.query.tab || 'blogs')
 const showEditor = ref(false)
+
+// 监听标签页变化，更新路由
+const handleTabChange = (tabName) => {
+  router.replace({ 
+    query: { ...route.query, tab: tabName }
+  })
+}
+
+// 监听路由变化，同步标签页状态
+watch(
+  () => route.query.tab,
+  (newTab) => {
+    if (newTab) {
+      activeTab.value = newTab
+    }
+  }
+)
 
 const handleBlogCreated = () => {
   showEditor.value = false
 }
+
+// 页面加载时恢复状态
+onMounted(() => {
+  if (route.query.tab) {
+    activeTab.value = route.query.tab
+  }
+})
 </script>
 
 <style scoped>

@@ -14,7 +14,7 @@ BlogServer::BlogServer() {
 
 bool BlogServer::init() {
     // 获取配置的端口
-    auto port = sylar::Config::Lookup("server.port", std::string("8080"))->getValue();
+    auto port = sylar::Config::Lookup("server.port", std::string("8081"))->getValue();
     auto addr = sylar::Address::LookupAnyIPAddress("localhost:" + port);
     
     if (!addr) {
@@ -66,17 +66,18 @@ void BlogServer::initDatabase() {
 
     SYLAR_LOG_INFO(g_logger) << "Database initialized connected...";
 
-    if(!sylar::MySQLManager::GetInstance()->Init(sylar::EnvMgr::GetInstance()->getConfigPath())) 
+    if(!sylar::db::MySQLManagerSingleton::GetInstance()->Init()) 
     {
         SYLAR_LOG_ERROR(g_logger) << "Failed to initialize MySQLManager";
         return;
     }
 
-    if(!sylar::RedisManager::GetInstance()->Init(sylar::EnvMgr::GetInstance()->getConfigPath())) 
+    if(!sylar::db::RedisManagerSingleton::GetInstance()->Init()) 
     {
         SYLAR_LOG_ERROR(g_logger) << "Failed to initialize RedisManager";
         return;
     }
+    
 
     SYLAR_LOG_INFO(g_logger) << "MySQL and Redis Managers initialized successfully";
 }

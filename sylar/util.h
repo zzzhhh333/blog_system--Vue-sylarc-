@@ -288,6 +288,14 @@ public:
 
 };
 
+class CryptoUtil {
+public:
+    static std::string md5(const std::string& str);
+    static std::string sha1(const std::string& str);
+    static std::string base64Encode(const std::string& str);
+    static std::string base64Decode(const std::string& str);
+};
+
 } // namespace sylar
 
 #endif // __SYLAR_UTIL_H__

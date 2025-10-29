@@ -68,35 +68,55 @@ const editingBlog = ref(null)
 const fetchBlogs = async () => {
   loading.value = true
   try {
-    let response
-    
-
-
-    if (props.showUserOnly){
-      // 检查用户信息是否存在
+    // 如果只显示用户自己的博客，但 user 未准备好，尝试用 token 拉取用户信息
+    if (props.showUserOnly && (!authStore.user || !authStore.user.id)) {
+      const token = localStorage.getItem('token')
+      if (token) {
+        try {
+          await authStore.fetchUserInfo()
+        } catch (e) {
+          console.error('fetchUserInfo 失败:', e)
+        }
+      }
+      // 拉取后仍然没有用户则提示并返回
       if (!authStore.user || !authStore.user.id) {
         console.error('用户信息不存在，无法获取用户博客')
         ElMessage.warning('用户信息加载中，请稍后...')
         return
       }
-      console.log('Fetching blogs for user ID:', authStore.user.id, 'Page:', currentPage.value, 'Page Size:', pageSize.value); 
-      response = await getBlogListByUser(authStore.user.id, currentPage.value, pageSize.value)
     }
-    else{
+
+    let response
+    if (props.showUserOnly){
+      response = await getBlogListByUser(authStore.user.id, currentPage.value, pageSize.value)
+    } else {
       const status = 1
       response = await getBlogList(currentPage.value, pageSize.value, status)
     }
+
     if (response.data.code === 200) {
       blogs.value = response.data.data
       total.value = response.data.data.length
     }
   } catch (error) {
-    console.error('原始方法错误:', error)
+    console.error('获取博客列表失败:', error)
     ElMessage.error('获取博客列表失败')
   } finally {
     loading.value = false
   }
 }
+
+// 当 authStore.user 变为可用时，如果当前在“我的博客”页，自动刷新列表
+watch(() => authStore.user, (val) => {
+  if (props.showUserOnly && val && val.id) {
+    fetchBlogs()
+  }
+})
+
+// onMounted 保持原有调用
+onMounted(() => {
+  fetchBlogs()
+})
 
 const isMyBlog = (blog) => {
   return authStore.isAuthenticated && blog.author_id === authStore.user?.id
@@ -144,15 +164,6 @@ const handleEditorSuccess = () => {
 const formatTime = (timestamp) => {
   return new Date(timestamp * 1000).toLocaleString()
 }
-
-onMounted(() => {
-  fetchBlogs()
-})
-
-watch(() => props.showUserOnly, () => {
-  currentPage.value = 1
-  fetchBlogs()
-})
 </script>
 
 <style scoped>

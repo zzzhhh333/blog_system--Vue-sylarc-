@@ -3,6 +3,7 @@
 
 #include <string>
 #include "jsoncpp/json/json.h"
+#include "sylar/db/mysql_connector.h"
 
 namespace blog_server {
 namespace util {

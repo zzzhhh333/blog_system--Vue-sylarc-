@@ -25,27 +25,27 @@ model::Blog BlogService::createBlog(const model::Blog& blog) {
     }
     
     // 验证输入参数
-    if (blog.title.empty() || blog.content.empty()) {
+    if (blog.getTitle().empty() || blog.getContent().empty()) {
         SYLAR_LOG_ERROR(g_logger) << "Blog title or content is empty";
         return model::Blog();
     }
     
-    if (blog.author_id <= 0) {
-        SYLAR_LOG_ERROR(g_logger) << "Invalid author ID: " << blog.author_id;
+    if (blog.getAuthorId() <= 0) {
+        SYLAR_LOG_ERROR(g_logger) << "Invalid author ID: " << blog.getAuthorId();
         return model::Blog();
     }
     
     // 创建博客对象
     model::Blog new_blog = blog;
-    new_blog.view_count = 0;
+    new_blog.setViewCount(0);
     
     // 保存博客
     if (!blog_dao_->create(new_blog)) {
-        SYLAR_LOG_ERROR(g_logger) << "Failed to create blog: " << blog.title;
+        SYLAR_LOG_ERROR(g_logger) << "Failed to create blog: " << blog.getTitle();
         return model::Blog();
     }
     
-    SYLAR_LOG_INFO(g_logger) << "Blog created successfully: " << new_blog.title << " (ID: " << new_blog.id << ")";
+    SYLAR_LOG_INFO(g_logger) << "Blog created successfully: " << new_blog.getTitle() << " (ID: " << new_blog.getId() << ")";
     return new_blog;
 }
 
@@ -55,37 +55,39 @@ bool BlogService::updateBlog(const model::Blog& blog) {
         return false;
     }
     
-    if (blog.id <= 0) {
-        SYLAR_LOG_ERROR(g_logger) << "Invalid blog ID: " << blog.id;
+    int64_t id=blog.getId();
+
+    if (id <= 0) {
+        SYLAR_LOG_ERROR(g_logger) << "Invalid blog ID: " << id;
         return false;
     }
     
     // 获取现有博客信息
-    model::Blog existing_blog = blog_dao_->findById(blog.id);
-    if (existing_blog.id == 0) {
-        SYLAR_LOG_ERROR(g_logger) << "Blog not found for update: " << blog.id;
+    model::Blog existing_blog = blog_dao_->findById(id);
+    if (existing_blog.getId() == 0) {
+        SYLAR_LOG_ERROR(g_logger) << "Blog not found for update: " << id;
         return false;
     }
     
     // 创建更新对象
     model::Blog update_blog = existing_blog;
-    update_blog.title = blog.title;
-    update_blog.content = blog.content;
-    update_blog.summary = blog.summary;
-    update_blog.status = blog.status;
+    update_blog.setTitle(blog.getTitle());
+    update_blog.setContent(blog.getContent());
+    update_blog.setSummary(blog.getSummary());
+    update_blog.setStatus(blog.getStatus());
     
     // 如果状态从未发布变为已发布，设置发布时间
-    if (existing_blog.status != 1 && blog.status == 1 && update_blog.published_at == 0) {
-        update_blog.published_at = time(nullptr);
+    if (existing_blog.getStatus() != 1 && blog.getStatus() == 1 && update_blog.getPublishedAt() == 0) {
+        update_blog.setPublishedAt(time(nullptr));
     }
     
     // 执行更新
     if (!blog_dao_->update(update_blog)) {
-        SYLAR_LOG_ERROR(g_logger) << "Failed to update blog: " << blog.id;
+        SYLAR_LOG_ERROR(g_logger) << "Failed to update blog: " << id;
         return false;
     }
     
-    SYLAR_LOG_INFO(g_logger) << "Blog updated successfully: " << blog.id;
+    SYLAR_LOG_INFO(g_logger) << "Blog updated successfully: " << id;
     return true;
 }
 
@@ -128,7 +130,7 @@ model::Blog BlogService::getBlog(int64_t blog_id) {
     }
     
     model::Blog blog = blog_dao_->findById(blog_id);
-    if (blog.id == 0) {
+    if (blog.getId() == 0) {
         SYLAR_LOG_DEBUG(g_logger) << "Blog not found: " << blog_id;
     }
     
@@ -264,12 +266,12 @@ bool BlogService::validateOwnership(int64_t blog_id, int64_t user_id) {
     }
     
     model::Blog blog = blog_dao_->findById(blog_id);
-    if (blog.id == 0) {
+    if (blog.getId() == 0) {
         SYLAR_LOG_ERROR(g_logger) << "Blog not found: " << blog_id;
         return false;
     }
     
-    bool owns = (blog.author_id == user_id);
+    bool owns = (blog.getAuthorId() == user_id);
     SYLAR_LOG_DEBUG(g_logger) << "User " << user_id << " owns blog " << blog_id << ": " << owns;
     return owns;
 }

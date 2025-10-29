@@ -1,6 +1,7 @@
 #include "user_servlet.h"
 #include "../../service/user_service.h"
 #include "../../util/json_util.h"
+#include "../../util/jwt_util.h"
 #include "../../util/auth_util.h"
 #include "../../model/response.h"
 
@@ -58,7 +59,7 @@ int32_t UserRegisterServlet::handle(sylar::http::HttpRequest::ptr request,
     service::UserService userService;
     auto result = userService.registerUser(username, password, nickname, email);
     
-    if (result.id == 0) {
+    if (result.getId() == 0) {
         // 注册失败
         response->setStatus(sylar::http::HttpStatus::BAD_REQUEST);
         model::ApiResponse api_response(400, "用户名已存在或注册失败");
@@ -68,7 +69,7 @@ int32_t UserRegisterServlet::handle(sylar::http::HttpRequest::ptr request,
     }
     
     // 注册成功，生成token
-    std::string token = util::AuthUtil::generateToken(result);
+    std::string token = util::JWTUtil::generateToken(result.getId(),result.getUsername(),result.getNickname());
     
     // 构建响应数据
     Json::Value data;
@@ -109,7 +110,7 @@ int32_t UserLoginServlet::handle(sylar::http::HttpRequest::ptr request,
     
     service::UserService userService;
     auto user = userService.login(username, password);
-    if (user.id == 0) {
+    if (user.getId() == 0) {
         response->setStatus(sylar::http::HttpStatus::UNAUTHORIZED);
         model::ApiResponse api_response(401, "用户名或密码错误");
         response->setBody(util::JsonUtil::toString(api_response.toJson()));
@@ -118,7 +119,7 @@ int32_t UserLoginServlet::handle(sylar::http::HttpRequest::ptr request,
     }
     
     // 生成token
-    std::string token = util::AuthUtil::generateToken(user);
+    std::string token = util::JWTUtil::generateToken(user.getId(),user.getUsername(),user.getNickname());
     
     Json::Value data;
     data["token"] = token;
@@ -137,8 +138,9 @@ int32_t UserInfoServlet::handle(sylar::http::HttpRequest::ptr request,
                                sylar::http::HttpResponse::ptr response,
                                sylar::http::HttpSession::ptr session) {
     // 从token获取用户信息
-    model::User user = util::AuthUtil::getCurrentUser(request);
-    if (user.id == 0) {
+    std::string token=util::AuthUtil::getCurrentToken(request);
+    auto userid = util::JWTUtil::getUserIdFromToken(token);
+    if (userid == 0) {
         response->setStatus(sylar::http::HttpStatus::UNAUTHORIZED);
         model::ApiResponse api_response(401, "请先登录");
         response->setBody(util::JsonUtil::toString(api_response.toJson()));
@@ -152,7 +154,7 @@ int32_t UserInfoServlet::handle(sylar::http::HttpRequest::ptr request,
         int64_t target_user_id = std::stol(user_id_str);
         service::UserService userService;
         auto target_user = userService.getUserById(target_user_id);
-        if (target_user.id == 0) {
+        if (target_user.getId() == 0) {
             response->setStatus(sylar::http::HttpStatus::NOT_FOUND);
             model::ApiResponse api_response(404, "用户不存在");
             response->setBody(util::JsonUtil::toString(api_response.toJson()));
@@ -165,8 +167,18 @@ int32_t UserInfoServlet::handle(sylar::http::HttpRequest::ptr request,
         response->setHeader("Content-Type", "application/json");
         return 0;
     }
+
+    service::UserService userService;
+    auto user = userService.getUserById(userid);
+    if (user.getId() == 0) {
+            response->setStatus(sylar::http::HttpStatus::NOT_FOUND);
+            model::ApiResponse api_response(404, "用户不存在");
+            response->setBody(util::JsonUtil::toString(api_response.toJson()));
+            response->setHeader("Content-Type", "application/json");
+            return 0;
+    }
     
-    // 返回当前用户信息
+    // 返回当前用户信息                                                                                                                
     model::ApiResponse api_response(200, "success", user.toJson());
     response->setBody(util::JsonUtil::toString(api_response.toJson()));
     response->setHeader("Content-Type", "application/json");
@@ -180,8 +192,10 @@ int32_t UserProfileServlet::handle(sylar::http::HttpRequest::ptr request,
                                   sylar::http::HttpResponse::ptr response,
                                   sylar::http::HttpSession::ptr session) {
     // 验证用户登录
-    model::User current_user = util::AuthUtil::getCurrentUser(request);
-    if (current_user.id == 0) {
+    std::string token=util::AuthUtil::getCurrentToken(request);
+    auto userid = util::JWTUtil::getUserIdFromToken(token);
+    auto username = util::JWTUtil::getUsernameFromToken(token);
+    if (userid == 0) {
         response->setStatus(sylar::http::HttpStatus::UNAUTHORIZED);
         model::ApiResponse api_response(401, "请先登录");
         response->setBody(util::JsonUtil::toString(api_response.toJson()));
@@ -200,18 +214,20 @@ int32_t UserProfileServlet::handle(sylar::http::HttpRequest::ptr request,
     }
     
     // 更新用户信息
-    model::User updated_user = current_user;
+    model::User updated_user = model::User();
+    updated_user.setId(userid);
+    updated_user.setUsername(username);
     if (json.isMember("nickname")) {
-        updated_user.nickname = json["nickname"].asString();
+        updated_user.setNickname(json["nickname"].asString());
     }
     if (json.isMember("email")) {
-        updated_user.email = json["email"].asString();
+        updated_user.setEmail(json["email"].asString());
     }
     if (json.isMember("avatar")) {
-        updated_user.avatar = json["avatar"].asString();
+        updated_user.setAvatar(json["avatar"].asString());
     }
     if (json.isMember("bio")) {
-        updated_user.bio = json["bio"].asString();
+        updated_user.setBio(json["bio"].asString());
     }
     
     service::UserService userService;

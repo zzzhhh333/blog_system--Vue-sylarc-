@@ -7,11 +7,8 @@
 namespace blog_server {
 namespace util {
 
-// 简单的token存储（实际项目应该使用Redis等）
-static std::map<std::string, model::User> s_tokens;
-static std::mutex s_token_mutex;
 
-model::User AuthUtil::getCurrentUser(sylar::http::HttpRequest::ptr request) {
+std::string AuthUtil::getCurrentToken(sylar::http::HttpRequest::ptr request) {
     std::string auth_header = request->getHeader("Authorization");
     if (auth_header.empty()) {
         // 尝试从cookie获取
@@ -26,7 +23,7 @@ model::User AuthUtil::getCurrentUser(sylar::http::HttpRequest::ptr request) {
                 auth_header = auth_header.substr(start, end - start);
             }
         } else {
-            return model::User();
+            return std::string();
         }
     } else {
         // 从Authorization头获取：Bearer <token>
@@ -36,38 +33,13 @@ model::User AuthUtil::getCurrentUser(sylar::http::HttpRequest::ptr request) {
     }
     
     if (auth_header.empty()) {
-        return model::User();
+        return std::string();
     }
     
-    return verifyToken(auth_header);
+    return auth_header;
 }
 
-std::string AuthUtil::generateToken(const model::User& user) {
-    std::string token = CryptoUtil::md5(user.username + std::to_string(time(nullptr)) + "secret_salt");
-    
-    std::lock_guard<std::mutex> lock(s_token_mutex);
-    s_tokens[token] = user;
-    
-    return token;
-}
 
-bool AuthUtil::verifyToken(const std::string& token, model::User& user) {
-    std::lock_guard<std::mutex> lock(s_token_mutex);
-    
-    auto it = s_tokens.find(token);
-    if (it != s_tokens.end()) {
-        user = it->second;
-        return true;
-    }
-    
-    return false;
-}
-
-model::User AuthUtil::verifyToken(const std::string& token) {
-    model::User user;
-    verifyToken(token, user);
-    return user;
-}
 
 } // namespace util
 } // namespace blog_server

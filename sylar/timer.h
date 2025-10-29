@@ -13,6 +13,7 @@
 #include <vector>
 #include <set>
 #include "mutex.h"
+#include "singleton.h"
 
 namespace sylar {
 
@@ -163,6 +164,9 @@ private:
     uint64_t m_previouseTime = 0;
 };
 
+typedef sylar::Singleton<TimerManager> TimerMgr;
+
 }
+
 
 #endif

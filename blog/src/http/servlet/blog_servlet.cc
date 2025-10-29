@@ -2,6 +2,7 @@
 #include "../../service/blog_service.h"
 #include "../../service/user_service.h"
 #include "../../util/json_util.h"
+#include "../../util/jwt_util.h"
 #include "../../util/auth_util.h"
 #include "../../model/response.h"
 #include <sstream>
@@ -77,8 +78,10 @@ int32_t BlogCreateServlet::handle(sylar::http::HttpRequest::ptr request,
                                  sylar::http::HttpResponse::ptr response,
                                  sylar::http::HttpSession::ptr session) {
     // 验证用户登录
-    auto user = util::AuthUtil::getCurrentUser(request);
-    if (user.id == 0) {
+    std::string token=util::AuthUtil::getCurrentToken(request);
+    int64_t userid = util::JWTUtil::getUserIdFromToken(token);
+    std::string nickname = util::JWTUtil::getNicknameFromToken(token);
+    if (userid == 0) {
         response->setStatus(sylar::http::HttpStatus::UNAUTHORIZED);
         model::ApiResponse api_response(401, "请先登录");
         response->setBody(util::JsonUtil::toString(api_response.toJson()));
@@ -107,12 +110,12 @@ int32_t BlogCreateServlet::handle(sylar::http::HttpRequest::ptr request,
     
     // 创建博客
     model::Blog blog = model::Blog::fromJson(json);
-    blog.author_id = user.id;
-    blog.author_name = user.nickname;
+    blog.setAuthorId(userid);
+    blog.setAuthorName(nickname);
     
     // 生成摘要（取前100个字符）
-    if (blog.summary.empty() && blog.content.length() > 100) {
-        blog.summary = blog.content.substr(0, 100) + "...";
+    if (blog.getSummary().empty() && blog.getContent().length() > 100) {
+        blog.setSummary(blog.getContent().substr(0, 100) + "...");
     }
     
     service::BlogService blog_service;
@@ -132,8 +135,9 @@ int32_t BlogUpdateServlet::handle(sylar::http::HttpRequest::ptr request,
                                  sylar::http::HttpResponse::ptr response,
                                  sylar::http::HttpSession::ptr session) {
     // 验证用户登录
-    auto user = util::AuthUtil::getCurrentUser(request);
-    if (user.id == 0) {
+    std::string token=util::AuthUtil::getCurrentToken(request);
+    auto userid = util::JWTUtil::getUserIdFromToken(token);
+    if (userid == 0) {
         response->setStatus(sylar::http::HttpStatus::UNAUTHORIZED);
         model::ApiResponse api_response(401, "请先登录");
         response->setBody(util::JsonUtil::toString(api_response.toJson()));
@@ -162,7 +166,7 @@ int32_t BlogUpdateServlet::handle(sylar::http::HttpRequest::ptr request,
     // 检查博客是否存在且属于当前用户
     service::BlogService blog_service;
     auto existing_blog = blog_service.getBlog(json["id"].asInt64());
-    if (existing_blog.id == 0) {
+    if (existing_blog.getId() == 0) {
         response->setStatus(sylar::http::HttpStatus::NOT_FOUND);
         model::ApiResponse api_response(404, "博客不存在");
         response->setBody(util::JsonUtil::toString(api_response.toJson()));
@@ -170,7 +174,7 @@ int32_t BlogUpdateServlet::handle(sylar::http::HttpRequest::ptr request,
         return 0;
     }
     
-    if (existing_blog.author_id != user.id) {
+    if (existing_blog.getAuthorId() != userid) {
         response->setStatus(sylar::http::HttpStatus::FORBIDDEN);
         model::ApiResponse api_response(403, "无权修改此博客");
         response->setBody(util::JsonUtil::toString(api_response.toJson()));
@@ -180,9 +184,9 @@ int32_t BlogUpdateServlet::handle(sylar::http::HttpRequest::ptr request,
     
     // 更新博客
     model::Blog blog = model::Blog::fromJson(json);
-    blog.id = existing_blog.id;
-    blog.author_id = existing_blog.author_id;
-    blog.author_name = existing_blog.author_name;
+    blog.setId(existing_blog.getId());
+    blog.setAuthorId(existing_blog.getAuthorId());
+    blog.setAuthorName(existing_blog.getAuthorName());
     
     bool success = blog_service.updateBlog(blog);
     if (!success) {
@@ -206,8 +210,9 @@ int32_t BlogDeleteServlet::handle(sylar::http::HttpRequest::ptr request,
                                  sylar::http::HttpResponse::ptr response,
                                  sylar::http::HttpSession::ptr session) {
     // 验证用户登录
-    auto user = util::AuthUtil::getCurrentUser(request);
-    if (user.id == 0) {
+    std::string token=util::AuthUtil::getCurrentToken(request);
+    auto userid = util::JWTUtil::getUserIdFromToken(token);
+    if (userid == 0) {
         response->setStatus(sylar::http::HttpStatus::UNAUTHORIZED);
         model::ApiResponse api_response(401, "请先登录");
         response->setBody(util::JsonUtil::toString(api_response.toJson()));
@@ -227,7 +232,7 @@ int32_t BlogDeleteServlet::handle(sylar::http::HttpRequest::ptr request,
     
     // 删除博客
     service::BlogService blog_service;
-    bool success = blog_service.deleteBlog(blog_id, user.id);
+    bool success = blog_service.deleteBlog(blog_id, userid);
     if (!success) {
         response->setStatus(sylar::http::HttpStatus::NOT_FOUND);
         model::ApiResponse api_response(404, "博客不存在或无权限删除");
@@ -261,7 +266,7 @@ int32_t BlogDetailServlet::handle(sylar::http::HttpRequest::ptr request,
     // 获取博客详情
     service::BlogService blog_service;
     auto blog = blog_service.getBlog(blog_id);
-    if (blog.id == 0) {
+    if (blog.getId() == 0) {
         response->setStatus(sylar::http::HttpStatus::NOT_FOUND);
         model::ApiResponse api_response(404, "博客不存在");
         response->setBody(util::JsonUtil::toString(api_response.toJson()));

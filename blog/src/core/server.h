@@ -2,8 +2,8 @@
 #define BLOG_SERVER_CORE_SERVER_H
 
 #include "sylar/http/http_server.h"
-#include "sylar/db/mysql.h"
-#include "sylar/db/redis.h"
+#include "sylar/db/mysql_connector.h"
+#include "sylar/db/redis_connector.h"
 #include <memory>
 
 namespace blog_server {
@@ -25,8 +25,6 @@ private:
     
 private:
     sylar::http::HttpServer::ptr m_httpServer;
-    sylar::MySQLPool::ptr m_mysqlPool;
-    sylar::RedisPool::ptr m_redisPool;
 };
 
 } // namespace blog_server

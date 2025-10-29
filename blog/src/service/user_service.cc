@@ -56,11 +56,11 @@ model::User UserService::registerUser(const std::string& username, const std::st
     
     // 创建用户对象
     model::User user;
-    user.username = username;
-    user.password = hashPassword(password);
-    user.nickname = nickname.empty() ? username : nickname;
-    user.email = email;
-    user.status = 1; // 正常状态
+    user.setUsername(username);
+    user.setPassword(hashPassword(password));
+    user.setNickname(nickname.empty() ? username : nickname);
+    user.setEmail(email);
+    user.setStatus(1); // 正常状态
     
     // 保存用户
     if (!user_dao_->create(user)) {
@@ -68,7 +68,7 @@ model::User UserService::registerUser(const std::string& username, const std::st
         return model::User();
     }
     
-    SYLAR_LOG_INFO(g_logger) << "User registered successfully: " << username << " (ID: " << user.id << ")";
+    SYLAR_LOG_INFO(g_logger) << "User registered successfully: " << username << " (ID: " << user.getId() << ")";
     return user;
 }
 
@@ -88,24 +88,24 @@ model::User UserService::login(const std::string& username, const std::string& p
     
     // 根据用户名查找用户
     model::User user = user_dao_->findByUsername(username);
-    if (user.id == 0) {
+    if (user.getId() == 0) {
         SYLAR_LOG_WARN(g_logger) << "User not found: " << username;
         return model::User();
     }
     
     // 检查用户状态
-    if (user.status != 1) {
+    if (user.getStatus() != 1) {
         SYLAR_LOG_WARN(g_logger) << "User is disabled: " << username;
         return model::User();
     }
     
     // 验证密码
-    if (!verifyPassword(password, user.password)) {
+    if (!verifyPassword(password, user.getPassword())) {
         SYLAR_LOG_WARN(g_logger) << "Password verification failed for user: " << username;
         return model::User();
     }
     
-    SYLAR_LOG_INFO(g_logger) << "User logged in successfully: " << username << " (ID: " << user.id << ")";
+    SYLAR_LOG_INFO(g_logger) << "User logged in successfully: " << username << " (ID: " << user.getId() << ")";
     return user;
 }
 
@@ -124,7 +124,7 @@ model::User UserService::getUserById(int64_t user_id) {
     }
     
     model::User user = user_dao_->findById(user_id);
-    if (user.id == 0) {
+    if (user.getId() == 0) {
         SYLAR_LOG_DEBUG(g_logger) << "User not found by ID: " << user_id;
     }
     
@@ -146,7 +146,7 @@ model::User UserService::getUserByUsername(const std::string& username) {
     }
     
     model::User user = user_dao_->findByUsername(username);
-    if (user.id == 0) {
+    if (user.getId() == 0) {
         SYLAR_LOG_DEBUG(g_logger) << "User not found by username: " << username;
     }
     
@@ -161,33 +161,35 @@ bool UserService::updateUser(const model::User& user) {
         SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
         return false;
     }
+
+    int id=user.getId();
     
-    if (user.id <= 0) {
-        SYLAR_LOG_ERROR(g_logger) << "Invalid user ID: " << user.id;
+    if (id <= 0) {
+        SYLAR_LOG_ERROR(g_logger) << "Invalid user ID: " << id;
         return false;
     }
     
     // 获取现有用户信息
-    model::User existing_user = user_dao_->findById(user.id);
-    if (existing_user.id == 0) {
-        SYLAR_LOG_ERROR(g_logger) << "User not found for update: " << user.id;
+    model::User existing_user = user_dao_->findById(id);
+    if (existing_user.getId() == 0) {
+        SYLAR_LOG_ERROR(g_logger) << "User not found for update: " << id;
         return false;
     }
     
     // 创建更新对象，只更新允许修改的字段
     model::User update_user = existing_user;
-    update_user.nickname = user.nickname;
-    update_user.email = user.email;
-    update_user.avatar = user.avatar;
-    update_user.bio = user.bio;
+    update_user.setNickname(user.getNickname());
+    update_user.setEmail(user.getEmail());
+    update_user.setAvatar(user.getAvatar());
+    update_user.setBio(user.getBio());
     
     // 执行更新
     if (!user_dao_->update(update_user)) {
-        SYLAR_LOG_ERROR(g_logger) << "Failed to update user: " << user.id;
+        SYLAR_LOG_ERROR(g_logger) << "Failed to update user: " << id;
         return false;
     }
     
-    SYLAR_LOG_INFO(g_logger) << "User updated successfully: " << user.id;
+    SYLAR_LOG_INFO(g_logger) << "User updated successfully: " << id;
     return true;
 }
 
@@ -199,6 +201,8 @@ bool UserService::validateUser(int64_t user_id, const std::string& password) {
         SYLAR_LOG_ERROR(g_logger) << "UserDAO not set";
         return false;
     }
+
+
     
     if (user_id <= 0 || password.empty()) {
         SYLAR_LOG_ERROR(g_logger) << "Invalid user ID or password";
@@ -206,12 +210,12 @@ bool UserService::validateUser(int64_t user_id, const std::string& password) {
     }
     
     model::User user = user_dao_->findById(user_id);
-    if (user.id == 0) {
+    if (user.getId() == 0) {
         SYLAR_LOG_ERROR(g_logger) << "User not found for validation: " << user_id;
         return false;
     }
     
-    bool valid = verifyPassword(password, user.password);
+    bool valid = verifyPassword(password, user.getPassword());
     SYLAR_LOG_DEBUG(g_logger) << "Password validation for user " << user_id << ": " << (valid ? "valid" : "invalid");
     return valid;
 }

@@ -21,6 +21,7 @@ namespace util {
 struct JWTClaims {
     int64_t user_id;
     std::string username;
+    std::string nickname;
     std::vector<std::string> roles;
     std::string jti;
     int64_t iat; // 签发时间
@@ -55,6 +56,7 @@ public:
      */
     static std::string generateToken(int64_t user_id, 
                                    const std::string& username, 
+                                   const std::string& nickname,
                                    const std::vector<std::string>& roles = {},
                                    int64_t expires_in = 3600 * 24);
     
@@ -86,6 +88,13 @@ public:
      * @return 用户名，失败返回空字符串
      */
     static std::string getUsernameFromToken(const std::string& token);
+
+    /**
+     * @brief 从令牌中获取用户昵称
+     * @param token JWT令牌
+     * @return 用户名，失败返回空字符串
+     */
+    static std::string getNicknameFromToken(const std::string& token);
     
     /**
      * @brief 从令牌中获取用户角色
