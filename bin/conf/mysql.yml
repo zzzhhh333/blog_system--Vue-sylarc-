@@ -1,13 +1,14 @@
 # conf/mysql.yml
-master:
-  host: "127.0.0.1"
-  port: 3306
-  user: "zzzhhh"
-  password: "123456"
-  database: "blog_system"
-  charset: "utf8mb4"
-  timeout: 30
-  max_conn: 20
+mysql:
+  pool_1:
+    host: "127.0.0.1"
+    port: 3306
+    user: "zzzhhh"
+    password: "123456"
+    database: "blog_system"
+    charset: "utf8mb4"
+    timeout: 30
+    max_conn: 20
 
 # slave1:
 #   host: "127.0.0.1"

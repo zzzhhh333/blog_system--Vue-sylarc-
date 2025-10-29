@@ -1,15 +1,10 @@
-# conf/redis.yml
-cache:
-  host: "127.0.0.1"
-  port: 6379
-  password: ""
-  timeout: 1000
-  pool_size: 10
-
-session:
-  host: "127.0.0.1"
-  port: 6379
-  password: ""
-  timeout: 1000
-  pool_size: 5
-  db: 1
+redis:
+  default:
+    host: "127.0.0.1"
+    port: 6379
+    password: ""
+    database: 0
+    # 开发环境使用较小的连接池
+    pool_size: 5
+    pool_min_size: 1
+    pool_max_size: 10
