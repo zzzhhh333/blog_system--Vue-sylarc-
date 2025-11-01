@@ -734,38 +734,56 @@ RedisConnectionPool::~RedisConnectionPool() {
 }
 
 RedisConnection::ptr RedisConnectionPool::getConnection() {
-    sylar::RWMutex::WriteLock lock(m_mutex);
+    sylar::RWMutex::ReadLock lock_r(m_mutex);
     
-    // 如果空闲连接池不为空，直接返回
+    // 如果空闲连接池不为空，直接返回（释放读锁、短期写锁修改容器）
     if (!m_idleConnections.empty()) {
-        auto conn = m_idleConnections.front();
-        m_idleConnections.pop_front();
-        m_activeConnections.push_back(conn);
-        return conn;
-    }
-    
-    // 如果没有达到最大连接数，创建新连接
-    if (m_activeConnections.size() + m_idleConnections.size() < m_maxConnections) {
-        if (createConnection()) {
+        lock_r.unlock();
+        sylar::RWMutex::WriteLock lock(m_mutex);
+        if (!m_idleConnections.empty()) {
             auto conn = m_idleConnections.front();
             m_idleConnections.pop_front();
             m_activeConnections.push_back(conn);
             return conn;
         }
+        // 如果被其他线程抢走，继续下面逻辑
     }
     
-    // 等待空闲连接（简单实现，实际应该使用条件变量）
+    // 计算当前总连接数（在读锁下安全）
+    size_t total = m_activeConnections.size() + m_idleConnections.size();
+    // 如果没有达到最大连接数，尝试创建新连接（先释放读锁，createConnection 内部会加写锁）
+    if (total < m_maxConnections) {
+        lock_r.unlock();
+        if (createConnection()) {
+            // 新连接已安全放入 idle，取出并返回
+            sylar::RWMutex::WriteLock lock(m_mutex);
+            if (!m_idleConnections.empty()) {
+                auto conn = m_idleConnections.front();
+                m_idleConnections.pop_front();
+                m_activeConnections.push_back(conn);
+                return conn;
+            }
+        }
+        // 创建失败或被其他线程抢占，回到读锁等待流程
+        lock_r.lock();
+    }
+    
+    // 等待空闲连接（简单实现，实际应使用条件变量）
     for (int i = 0; i < 10 && m_idleConnections.empty(); ++i) {
-        lock.unlock();
+        lock_r.unlock();
         usleep(100000); // 100ms
-        lock.lock();
+        lock_r.lock();
     }
     
     if (!m_idleConnections.empty()) {
-        auto conn = m_idleConnections.front();
-        m_idleConnections.pop_front();
-        m_activeConnections.push_back(conn);
-        return conn;
+        lock_r.unlock();
+        sylar::RWMutex::WriteLock lock(m_mutex);
+        if (!m_idleConnections.empty()) {
+            auto conn = m_idleConnections.front();
+            m_idleConnections.pop_front();
+            m_activeConnections.push_back(conn);
+            return conn;
+        }
     }
     
     SYLAR_LOG_ERROR(g_logger) << "No available redis connection in pool";
@@ -777,16 +795,19 @@ void RedisConnectionPool::returnConnection(RedisConnection::ptr conn) {
         return;
     }
     
-    sylar::RWMutex::WriteLock lock(m_mutex);
+    sylar::RWMutex::ReadLock lock_r(m_mutex);
     
     // 从活跃连接中移除
     auto it = std::find(m_activeConnections.begin(), m_activeConnections.end(), conn);
     if (it != m_activeConnections.end()) {
+        lock_r.unlock();
+        sylar::RWMutex::WriteLock lock(m_mutex);
         m_activeConnections.erase(it);
     }
     
     // 如果连接仍然有效，放回空闲连接池
     if (conn->isConnected()) {
+        sylar::RWMutex::WriteLock lock(m_mutex);
         m_idleConnections.push_back(conn);
     } else {
         SYLAR_LOG_WARN(g_logger) << "Redis connection is invalid, discarding";
@@ -831,31 +852,75 @@ bool RedisConnectionPool::createConnection() {
         return false;
     }
     
-    m_idleConnections.push_back(conn);
+    // 写入共享容器必须加写锁
+    {
+        sylar::RWMutex::WriteLock write(m_mutex);
+        m_idleConnections.push_back(conn);
+    }
     return true;
 }
 
 void RedisConnectionPool::cleanupIdleConnections() {
-    sylar::RWMutex::WriteLock lock(m_mutex);
-    
-    // 简单实现：如果空闲连接超过最小连接数，移除多余的连接
-    if (m_idleConnections.size() > m_minConnections) {
-        size_t toRemove = m_idleConnections.size() - m_minConnections;
-        for (size_t i = 0; i < toRemove && !m_idleConnections.empty(); ++i) {
-            auto conn = m_idleConnections.front();
+    // 1) 在写锁下尽快把待检查的连接移出池，避免其它线程同时使用同一连接
+    std::vector<RedisConnection::ptr> to_check;
+    {
+        sylar::RWMutex::WriteLock write(m_mutex);
+        // 优先移除超过最小数量的连接用于清理
+        while (!m_idleConnections.empty() && m_idleConnections.size() > m_minConnections) {
+            to_check.push_back(m_idleConnections.front());
             m_idleConnections.pop_front();
+        }
+        // 为了健康检查，也把当前剩余空闲连接做一次采样检查（可根据需要改为采样而非全部）
+        // 这里选择把剩余全部也暂时移出，ping 后再放回，确保 ping 时不会有并发使用
+        while (!m_idleConnections.empty()) {
+            to_check.push_back(m_idleConnections.front());
+            m_idleConnections.pop_front();
+        }
+    }
+
+    if (to_check.empty()) {
+        return;
+    }
+
+    // 2) 在锁外进行耗时的 ping 操作（会触发 IOManager 的事件等待），避免长时间持写锁
+    std::vector<RedisConnection::ptr> healthy;
+    healthy.reserve(to_check.size());
+    for (auto &conn : to_check) {
+        if (!conn) continue;
+        bool ok = false;
+        try {
+            ok = conn->ping();
+        } catch (...) {
+            ok = false;
+        }
+        if (ok) {
+            healthy.push_back(conn);
+        } else {
+            SYLAR_LOG_WARN(g_logger) << "Redis connection ping failed, closing";
             conn->close();
         }
     }
-    
-    // 检查所有空闲连接的有效性
-    for (auto it = m_idleConnections.begin(); it != m_idleConnections.end();) {
-        if (!(*it)->ping()) {
-            SYLAR_LOG_WARN(g_logger) << "Redis connection ping failed, removing from pool";
-            (*it)->close();
-            it = m_idleConnections.erase(it);
-        } else {
-            ++it;
+
+    // 3) 把健康的连接短时间写回池中，并保证最小连接数
+    {
+        sylar::RWMutex::WriteLock write(m_mutex);
+        for (auto &c : healthy) {
+            // 防止池超限：若已达到最大连接数则关闭多余连接
+            if (m_idleConnections.size() + m_activeConnections.size() < m_maxConnections) {
+                m_idleConnections.push_back(c);
+            } else {
+                c->close();
+            }
+        }
+        // 如需保证最小连接数，尝试创建缺失的连接（createConnection 内部会加写锁）
+        while (m_idleConnections.size() < m_minConnections) {
+            // 注意：createConnection 会再次获取写锁，若你的 RWMutex 不允许重入请将此逻辑移到锁外并谨慎处理
+            write.unlock();
+            if (!createConnection()) {
+                write.lock();
+                break;
+            }
+            write.lock();
         }
     }
 }

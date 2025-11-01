@@ -344,7 +344,7 @@ int64_t MySQLPreparedStatement::executeUpdate() {
         return m_stmt->executeUpdate();
     } catch (const sql::SQLException& e) {
         SYLAR_LOG_ERROR(g_logger) << "MySQL prepared statement executeUpdate error: " << e.what();
-        return 0;
+        return -1;
     }
 }
 
@@ -354,7 +354,7 @@ uint64_t MySQLPreparedStatement::getUpdateCount() const {
         return m_stmt->getUpdateCount();
     } catch (const sql::SQLException& e) {
         SYLAR_LOG_ERROR(g_logger) << "MySQL getUpdateCount error: " << e.what();
-        return 0;
+        return -1;
     }
 }
 
@@ -633,43 +633,72 @@ MySQLConnectionPool::~MySQLConnectionPool() {
 }
 
 MySQLConnection::ptr MySQLConnectionPool::getConnection() {
-    sylar::RWMutex::WriteLock lock(m_mutex);
-    
-    // 首先尝试从空闲连接池获取
+    // 第一步：先用读锁检查空闲连接（读操作，允许并发）
+    sylar::RWMutex::ReadLock readLock(m_mutex);
+    SYLAR_LOG_DEBUG(g_logger) << "active size:" << m_activeConnections.size() 
+                             << "idle size: " << m_idleConnections.size();
+
+    // 检查是否有空闲连接（读操作，无需写锁）
     if (!m_idleConnections.empty()) {
-        auto conn = m_idleConnections.back();
-        m_idleConnections.pop_back();
-        
-        // 检查连接是否仍然有效
-        if (conn->isClosed()) {
-            SYLAR_LOG_DEBUG(g_logger) << "Idle connection is closed, reconnecting...";
-            if (!conn->reconnect()) {
-                SYLAR_LOG_ERROR(g_logger) << "Failed to reconnect idle connection";
+        // 第二步：确认需要修改连接池列表时，升级为写锁（仅在修改时加写锁）
+        readLock.unlock();  // 先释放读锁，避免死锁（读锁升级写锁需先释放）
+        sylar::RWMutex::WriteLock writeLock(m_mutex);
+
+        // 再次检查空闲连接（防止释放读锁后被其他线程修改）
+        if (!m_idleConnections.empty()) {
+            auto conn = m_idleConnections.back();
+            m_idleConnections.pop_back();  // 修改操作，需写锁
+
+            // 第三步：连接有效性检查（耗时操作，释放写锁，避免阻塞其他线程）
+            writeLock.unlock();
+
+            if (conn->isClosed()) {
+                SYLAR_LOG_DEBUG(g_logger) << "Idle connection is closed, reconnecting...";
+                if (!conn->reconnect()) {
+                    SYLAR_LOG_ERROR(g_logger) << "Failed to reconnect idle connection";
+                    return nullptr;
+                }
+            }
+
+            // 第四步：将连接加入活跃列表（再次加写锁）
+            sylar::RWMutex::WriteLock writeLock2(m_mutex);
+            m_activeConnections.push_back(conn);  // 修改操作，需写锁
+            SYLAR_LOG_DEBUG(g_logger) << "Got connection from idle pool, active: " 
+                                     << m_activeConnections.size() 
+                                     << ", idle: " << m_idleConnections.size();
+            return conn;
+        }
+        // 若释放读锁后空闲连接已被取空，重新走后续逻辑
+    }
+
+    // 无空闲连接，检查是否能创建新连接（读操作，用读锁）
+    readLock.unlock();
+    sylar::RWMutex::ReadLock readLock2(m_mutex);
+    bool canCreate = (m_activeConnections.size() + m_idleConnections.size()) < m_maxConnections;
+    readLock2.unlock();
+
+    if (canCreate) {
+        sylar::RWMutex::WriteLock writeLock(m_mutex);
+        // 再次检查连接数（防止并发创建超上限）
+        if ((m_activeConnections.size() + m_idleConnections.size()) < m_maxConnections) {
+            auto conn = std::make_shared<MySQLConnection>();
+            
+            // 第五步：连接数据库（耗时操作，释放写锁）
+            writeLock.unlock();
+            if (conn->connect(m_host, m_port, m_username, m_password, m_database)) {
+                // 连接成功后，加入活跃列表（加写锁）
+                sylar::RWMutex::WriteLock writeLock2(m_mutex);
+                m_activeConnections.push_back(conn);
+                SYLAR_LOG_DEBUG(g_logger) << "Created new connection, active: " 
+                                         << m_activeConnections.size();
+                return conn;
+            } else {
+                SYLAR_LOG_ERROR(g_logger) << "Failed to create new connection";
                 return nullptr;
             }
         }
-        
-        m_activeConnections.push_back(conn);
-        SYLAR_LOG_DEBUG(g_logger) << "Got connection from idle pool, active: " 
-                                 << m_activeConnections.size() 
-                                 << ", idle: " << m_idleConnections.size();
-        return conn;
     }
-    
-    // 如果没有空闲连接，创建新连接
-    if (m_activeConnections.size() + m_idleConnections.size() < m_maxConnections) {
-        auto conn = std::make_shared<MySQLConnection>();
-        if (conn->connect(m_host, m_port, m_username, m_password, m_database)) {
-            m_activeConnections.push_back(conn);
-            SYLAR_LOG_DEBUG(g_logger) << "Created new connection, active: " 
-                                     << m_activeConnections.size();
-            return conn;
-        } else {
-            SYLAR_LOG_ERROR(g_logger) << "Failed to create new connection";
-            return nullptr;
-        }
-    }
-    
+
     // 连接池已满
     SYLAR_LOG_ERROR(g_logger) << "Connection pool is full, max connections: " << m_maxConnections;
     return nullptr;
